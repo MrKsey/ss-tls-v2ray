@@ -1,0 +1,15 @@
+{
+  "server": "[SERVER_PUBLIC_IP]",
+  "server_port": 443,
+  "password": "nD3KGEu49ds2uYsWtT7bGcSrkBHxHHVw9aRHfHNE",
+  "timeout": 120,
+  "method": "chacha20-ietf-poly1305",
+  "no_delay": true,
+  "fast_open": true,
+  "workers": 1,
+  "mode": "tcp_only",
+  "local_address": "0.0.0.0",
+  "local_port":1443,
+  "plugin": "simple-tls",
+  "plugin_opts": "cert-hash=[HASH];no-verify;n=google.com"
+}
