@@ -1,0 +1,14 @@
+{
+  "server": "[SERVER_PUBLIC_IP]",
+  "server_port": 80,
+  "password": "Z288LUMK93dAHqTgMt7xmfVqEbz2SfzCRPnLj8xM",
+  "timeout": 120,
+  "method": "chacha20-ietf-poly1305",
+  "no_delay": true,
+  "fast_open": true,
+  "workers": 1,
+  "mode": "tcp_only",
+  "local_address": "0.0.0.0",
+  "local_port":1080,
+  "plugin": "v2ray"
+}
