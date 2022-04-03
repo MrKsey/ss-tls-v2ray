@@ -1,7 +1,7 @@
 {
   "server": "[SERVER_PUBLIC_IP]",
   "server_port": 80,
-  "password": "Z288LUMK93dAHqTgMt7xmfVqEbz2SfzCRPnLj8xM",
+  "password": "nD3KGEu49ds2uYsWtT7bGcSrkBHxHHVw9aRHfHNE",
   "timeout": 120,
   "method": "chacha20-ietf-poly1305",
   "no_delay": true,
