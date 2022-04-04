@@ -1,5 +1,5 @@
 [Unit]
-Description=shadowsocks-rust service
+Description=shadowsocks-rust server
 After=network.target
 [Service]
 ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks/server/ss.json
