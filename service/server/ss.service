@@ -1,0 +1,15 @@
+[Unit]
+Description=shadowsocks-rust service
+After=network.target
+[Service]
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks/server/ss.json
+ExecStop=/usr/bin/killall ssserver
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ssserver
+User=nobody
+Group=nogroup
+[Install]
+WantedBy=multi-user.target
