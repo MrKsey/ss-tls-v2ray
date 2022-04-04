@@ -2,7 +2,7 @@
 Description=shadowsocks+v2ray server
 After=network.target
 [Service]
-ExecStart=v2ray -server -host microsoft.com -localAddr 0.0.0.0 -localPort 80 -remoteAddr 127.0.0.1 -remotePort 8443 -loglevel none
+ExecStart=v2ray -server -host windowsupdate.microsoft.com -localAddr 0.0.0.0 -localPort 80 -remoteAddr 127.0.0.1 -remotePort 8443 -loglevel none
 ExecStop=pkill v2ray
 Type=simple
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
