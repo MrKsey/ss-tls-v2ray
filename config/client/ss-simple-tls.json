@@ -11,5 +11,5 @@
   "local_address": "0.0.0.0",
   "local_port": 1443,
   "plugin": "simple-tls",
-  "plugin_opts": "cert-hash=[HASH];no-verify;n=microsoft.com"
+  "plugin_opts": "cert-hash=[HASH];no-verify;n=windowsupdate.microsoft.com"
 }
