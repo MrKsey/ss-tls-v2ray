@@ -8,7 +8,7 @@ Restart=always
 RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=ss-simple-tls
+SyslogIdentifier=sslocal-simple-tls
 User=nobody
 Group=nogroup
 [Install]
