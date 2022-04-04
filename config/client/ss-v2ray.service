@@ -1,13 +1,15 @@
 [Unit]
-Description=v2ray standalone client
+Description=shadowsocks+v2ray client
 After=network.target
 [Service]
-Type=simple
+ExecStart=sslocal -c /etc/shadowsocks/client/ss-v2ray.json
+ExecStop=pkill -f "sslocal -c /etc/shadowsocks/client/ss-v2ray.json"
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ss-v2ray
 User=nobody
 Group=nogroup
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_BIND_SERVICE
-LimitNOFILE=51200
-ExecStart=/usr/local/bin/v2ray -localAddr 0.0.0.0 -localPort 1080 -remoteAddr  -remotePort 80 -loglevel none
 [Install]
 WantedBy=multi-user.target
