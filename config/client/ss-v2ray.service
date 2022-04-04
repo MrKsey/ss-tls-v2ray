@@ -8,7 +8,7 @@ Restart=always
 RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=ss-v2ray
+SyslogIdentifier=sslocal-v2ray
 User=nobody
 Group=nogroup
 [Install]
