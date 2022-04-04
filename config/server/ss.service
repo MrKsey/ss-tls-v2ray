@@ -1,9 +1,9 @@
 [Unit]
-Description=shadowsocks-rust server
+Description=shadowsocks server
 After=network.target
 [Service]
-ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks/server/ss.json
-ExecStop=/usr/bin/killall ssserver
+ExecStart=ssserver -c /etc/shadowsocks/server/ss.json
+ExecStop=pkill -f "ssserver -c /etc/shadowsocks/server/ss.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
