@@ -1,0 +1,13 @@
+[Unit]
+Description=v2ray standalone client
+After=network.target
+[Service]
+Type=simple
+User=nobody
+Group=nogroup
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitNOFILE=51200
+ExecStart=/usr/local/bin/v2ray -localAddr 0.0.0.0 -localPort 1080 -remoteAddr  -remotePort 80 -loglevel none
+[Install]
+WantedBy=multi-user.target
