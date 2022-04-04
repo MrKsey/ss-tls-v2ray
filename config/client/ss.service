@@ -1,14 +1,14 @@
 [Unit]
-Description=shadowsocks-rust client
+Description=shadowsocks client
 After=network.target
 [Service]
-ExecStart=/usr/local/bin/sslocal -c /etc/shadowsocks/client/ss.json
-ExecStop=/usr/bin/killall sslocal
+ExecStart=sslocal -c /etc/shadowsocks/client/ss.json
+ExecStop=pkill -f "sslocal -c /etc/shadowsocks/client/ss.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=sslocal
+SyslogIdentifier=ss
 User=nobody
 Group=nogroup
 [Install]
