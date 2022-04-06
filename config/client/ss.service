@@ -2,8 +2,8 @@
 Description=shadowsocks client
 After=network.target
 [Service]
-ExecStart=sslocal -c /etc/shadowsocks/client/ss.json
-ExecStop=pkill -f "sslocal -c /etc/shadowsocks/client/ss.json"
+ExecStart=sslocal -c $CONFIG_PATH/client/ss.json
+ExecStop=pkill -f "sslocal -c $CONFIG_PATH/client/ss.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
