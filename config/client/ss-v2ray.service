@@ -2,8 +2,8 @@
 Description=shadowsocks+v2ray client
 After=network.target
 [Service]
-ExecStart=sslocal -c /etc/shadowsocks/client/ss-v2ray.json
-ExecStop=pkill -f "sslocal -c /etc/shadowsocks/client/ss-v2ray.json"
+ExecStart=sslocal -c $CONFIG_PATH/client/ss-v2ray.json
+ExecStop=pkill -f "sslocal -c $CONFIG_PATH/client/ss-v2ray.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
