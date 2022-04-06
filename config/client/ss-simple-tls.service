@@ -2,8 +2,8 @@
 Description=shadowsocks+simple-tls client
 After=network.target
 [Service]
-ExecStart=sslocal -c /etc/shadowsocks/client/ss-simple-tls.json
-ExecStop=pkill -f "sslocal -c /etc/shadowsocks/client/ss-simple-tls.json"
+ExecStart=sslocal -c $CONFIG_PATH/client/ss-simple-tls.json
+ExecStop=pkill -f "sslocal -c $CONFIG_PATH/client/ss-simple-tls.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
