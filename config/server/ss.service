@@ -2,8 +2,8 @@
 Description=shadowsocks server
 After=network.target
 [Service]
-ExecStart=ssserver -c /etc/shadowsocks/server/ss.json
-ExecStop=pkill -f "ssserver -c /etc/shadowsocks/server/ss.json"
+ExecStart=ssserver -c $CONFIG_PATH/server/ss.json
+ExecStop=pkill -f "ssserver -c $CONFIG_PATH/server/ss.json"
 Restart=always
 RestartSec=10
 StandardOutput=syslog
