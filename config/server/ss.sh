@@ -6,7 +6,7 @@
 . $CONFIG_PATH/.config.env
 
 start() {
-    ssserver -c $CONFIG_PATH/server/ss.json
+    ssserver -c $CONFIG_PATH/server/ss.json &
 }
 
 stop() {
