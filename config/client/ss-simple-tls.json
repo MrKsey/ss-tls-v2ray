@@ -1,7 +1,7 @@
 {
   "server": "[SERVER_PUBLIC_IP]",
   "server_port": 443,
-  "password": "nD3KGEu49ds2uYsWtT7bGcSrkBHxHHVw9aRHfHNE",
+  "password": "",
   "timeout": 120,
   "method": "chacha20-ietf-poly1305",
   "no_delay": true,
@@ -11,5 +11,5 @@
   "local_address": "0.0.0.0",
   "local_port": 1443,
   "plugin": "simple-tls",
-  "plugin_opts": "cert-hash=[HASH];no-verify;n=windowsupdate.microsoft.com"
+  "plugin_opts": "cert-hash=[HASH];no-verify;n=$SIMPLE_TLS_DOMAIN"
 }
