@@ -14,7 +14,8 @@ stop() {
 
 status() {
     STATUS=$(lsof -i -P -n | grep ssserver); [ -z "$STATUS" ] && \
-    echo "Server ssserver is not started. Check the ports." || echo "Server ssserver is running:"; lsof -i -P -n | grep ssserver
+    echo "Server ssserver is not started. Check parameter server_port in ../server/ss.json" || \
+    echo "Server ssserver is running:"; lsof -i -P -n | grep ssserver
 }
 
 case "$1" in 
