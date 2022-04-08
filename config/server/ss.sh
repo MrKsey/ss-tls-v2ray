@@ -13,7 +13,8 @@ stop() {
 }
 
 status() {
-    STATUS=$(lsof -i -P -n | grep ssserver); [ -z "$SS_STATUS" ] && echo "NOT STARTDED. CHECK PORTS." || echo "STARTED:"; lsof -i -P -n | grep ssserver
+    STATUS=$(lsof -i -P -n | grep ssserver); [ -z "$STATUS" ] && \
+    echo "Server ssserver not started. Check the ports" || echo "Server ssserver running:"; lsof -i -P -n | grep ssserver
 }
 
 case "$1" in 
