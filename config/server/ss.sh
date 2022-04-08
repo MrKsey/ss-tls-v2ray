@@ -14,7 +14,7 @@ stop() {
 
 status() {
     STATUS=$(lsof -i -P -n | grep ssserver); [ -z "$STATUS" ] && \
-    echo "Server ssserver is not started. Check parameter server_port in ../server/ss.json" || \
+    echo "Server ssserver is not started. The network port $SS_SERVER_PORT may already be in use. Change port parameter server_port in ../server/ss.json and restart server" || 
     echo "Server ssserver is running:"; lsof -i -P -n | grep ssserver
 }
 
