@@ -1,5 +1,4 @@
 #!/bin/bash
-# chkconfig: 35 20 80
 # description: shadowsocks server
 
 # Source function library.
@@ -11,6 +10,10 @@ start() {
 
 stop() {
     pkill -f "ssserver -c $CONFIG_PATH/server/ss.json"
+}
+
+status() {
+    lsof -i -P -n | grep ssserver
 }
 
 case "$1" in 
@@ -25,7 +28,7 @@ case "$1" in
        start
        ;;
     status)
-       lsof -i -P -n | grep ssserver
+       status
        ;;
     *)
        echo "Usage: $0 {start|stop|status|restart}"
