@@ -13,7 +13,8 @@ stop() {
 }
 
 status() {
-    lsof -i -P -n | grep sslocal
+    STATUS=$(lsof -i -P -n | grep sslocal); [ -z "$STATUS" ] && \
+    echo "Client v2ray is not started. Check the ports." || echo "Client v2ray is running:"; lsof -i -P -n | grep sslocal
 }
 
 case "$1" in 
