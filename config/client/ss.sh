@@ -13,7 +13,8 @@ stop() {
 }
 
 status() {
-    lsof -i -P -n | grep sslocal
+    STATUS=$(lsof -i -P -n | grep sslocal); [ -z "$STATUS" ] && \
+    echo "Client sslocal is not started. Check the ports." || echo "Client sslocal running:"; lsof -i -P -n | grep sslocal
 }
 
 case "$1" in 
