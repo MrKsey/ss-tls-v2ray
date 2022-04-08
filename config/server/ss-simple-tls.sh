@@ -13,7 +13,7 @@ stop() {
 }
 
 status() {
-    lsof -i -P -n | grep simple-tls
+    lsof -i -P -n | grep simple-tl
 }
 
 case "$1" in 
