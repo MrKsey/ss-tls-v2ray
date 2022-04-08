@@ -13,8 +13,8 @@ stop() {
 }
 
 status() {
-    STATUS=$(lsof -i -P -n | grep simple-tls); [ -z "$STATUS" ] && \
-    echo "Server simple-tls is not started. Check the ports." || echo "Server simple-tls running:"; lsof -i -P -n | grep simple-tls
+    STATUS=$(lsof -i -P -n | grep simple-tl); [ -z "$STATUS" ] && \
+    echo "Server simple-tls is not started. Check the ports." || echo "Server simple-tls is running:"; lsof -i -P -n | grep simple-tl
 }
 
 case "$1" in 
