@@ -14,7 +14,7 @@ stop() {
 
 status() {
     STATUS=$(lsof -i -P -n | grep v2ray); [ -z "$STATUS" ] && \
-    echo "Server v2ray is not started. Check the ports." || echo "Server v2ray running:"; lsof -i -P -n | grep v2ray
+    echo "Server v2ray is not started. Check the ports." || echo "Server v2ray is running:"; lsof -i -P -n | grep v2ray
 }
 
 case "$1" in 
