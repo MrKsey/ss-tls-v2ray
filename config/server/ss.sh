@@ -14,7 +14,7 @@ stop() {
 
 status() {
     STATUS=$(lsof -i -P -n | grep ssserver); [ -z "$STATUS" ] && \
-    printf "${RED}Server ShadowSocks is not started.${NC}\n The network port $SS_SERVER_PORT may already be in use. Change port parameter server_port in ../server/ss.json and restart server" || 
+    printf "${RED}Server ShadowSocks is not started.${NC}\n The network port $SS_SERVER_PORT may already be in use. Change port parameter server_port in ../server/ss.json and restart server\n" || 
     printf "${GREEN}Server ShadowSocks is running:${NC}\n"; lsof -i -P -n | grep ssserver
 }
 
