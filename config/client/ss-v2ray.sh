@@ -14,8 +14,8 @@ stop() {
 
 status() {
     STATUS=$(lsof -n -P -i | grep "sslocal" | grep ":$V2RAY_LOCAL_PORT"); [ -z "$STATUS" ] && \
-    echo "Client sslocal is not started. The network port $V2RAY_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss-v2ray.json and restart client" || 
-    echo "Client sslocal is running:"; lsof -n -P -i | grep "sslocal" | grep ":$V2RAY_LOCAL_PORT"
+    echo "${RED}Client sslocal is not started.${NC} The network port $V2RAY_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss-v2ray.json and restart client" || 
+    echo "${GREEN}Client sslocal is running:${NC}"; lsof -n -P -i | grep "sslocal" | grep ":$V2RAY_LOCAL_PORT"
 }
 
 case "$1" in 
