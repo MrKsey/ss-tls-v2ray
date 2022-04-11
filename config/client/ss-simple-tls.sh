@@ -14,8 +14,8 @@ stop() {
 
 status() {
     STATUS=$(lsof -n -P -i | grep "sslocal" | grep ":$SIMPLE_TLS_LOCAL_PORT"); [ -z "$STATUS" ] && \
-    echo "Client sslocal is not started. The network port $SIMPLE_TLS_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss-simple-tls.json and restart client" || 
-    echo "Client sslocal is running:"; lsof -n -P -i | grep "sslocal" | grep ":$SIMPLE_TLS_LOCAL_PORT"
+    echo "${RED}Client sslocal is not started.${NC} The network port $SIMPLE_TLS_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss-simple-tls.json and restart client" || 
+    echo "${GREEN}Client sslocal is running:${NC}"; lsof -n -P -i | grep "sslocal" | grep ":$SIMPLE_TLS_LOCAL_PORT"
 }
 
 case "$1" in 
