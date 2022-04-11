@@ -14,7 +14,7 @@ stop() {
 
 status() {
     STATUS=$(lsof -n -P -i | grep "sslocal" | grep ":$SS_LOCAL_PORT"); [ -z "$STATUS" ] && \
-    printf "${RED}Client ShadowSocks is not started.${NC}\n The network port $SS_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss.json and restart client" || 
+    printf "${RED}Client ShadowSocks is not started.${NC}\n The network port $SS_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss.json and restart client\n" || 
     printf "${GREEN}Client ShadowSocks is running:${NC}\n"; lsof -n -P -i | grep "sslocal" | grep ":$SS_LOCAL_PORT"
 }
 
