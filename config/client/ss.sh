@@ -13,9 +13,9 @@ stop() {
 }
 
 status() {
-    STATUS=$(lsof -i -P -n | grep sslocal); [ -z "$STATUS" ] && \
-    echo "Client sslocal is not started. The network port $SS_SERVER_PORT may already be in use. Change port parameter server_port in ../server/ss.json and restart server" || 
-    echo "Server sslocal is running:"; lsof -i -P -n | grep ssserver | grep $SS_SERVER_PORT
+    STATUS=$(lsof -n -P -i | grep "sslocal" | grep ":$SS_LOCAL_PORT"); [ -z "$STATUS" ] && \
+    echo "Client sslocal is not started. The network port $SS_LOCAL_PORT may already be in use. Change port parameter local_port in ../client/ss.json and restart client" || 
+    echo "Server sslocal is running:"; lsof -n -P -i | grep "sslocal" | grep ":$SS_LOCAL_PORT"
 }
 
 case "$1" in 
