@@ -18,7 +18,7 @@ COPY start.sh /start.sh
 COPY config.sh /config.sh
 COPY update.sh /update.sh
 
-export DEBIAN_FRONTEND=noninteractive \
+RUN export DEBIAN_FRONTEND=noninteractive \
 && chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh \
 && apt-get update && apt-get upgrade -y \
 && apt-get install --no-install-recommends -y ca-certificates tzdata curl wget xz-utils unzip jq subversion moreutils libcap2-bin cron lsof \
