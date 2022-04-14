@@ -61,6 +61,12 @@ sed -i "/^UPDATE_SCHEDULE=/{h;s/=.*/=${UPDATE_SCHEDULE}/};\${x;/^$/{s//UPDATE_SC
 sed -i -E "s/UPDATE_SCHEDULE=(.*)/UPDATE_SCHEDULE=\"\1\"/" $CONFIG_PATH/config.ini
 sed -i "s/\"\"/\"/g" $CONFIG_PATH/config.ini
 
+# Scheduled updates
+if [ ! -z "$UPDATE_SCHEDULE" ]; then
+    echo "$UPDATE_SCHEDULE /update.sh >> /var/log/cron.log 2>&1" | crontab -
+    cron -f >> /var/log/cron.log 2>&1&
+fi
+
 #  MODE
 [ -z "$MODE" ] && export MODE=server
 [ "$MODE" != "server" ] && export MODE=client
