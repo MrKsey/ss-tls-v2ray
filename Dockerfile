@@ -1,20 +1,25 @@
+#
+# Shadowsocks-rust + v2ray (websocket-http) + simple-tls (TLS1.3)
+#
 
-export GIT_URL="https://github.com/MrKsey/ss-tls-v2ray"
+FROM ubuntu:latest
 
-export SS_URL="https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases"
-export SS_VER="latest"
+ENV GIT_URL="https://github.com/MrKsey/ss-tls-v2ray"
+ENV SS_URL="https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases"
+ENV SS_VER="latest"
+ENV SIMPLE_TLS_URL="https://api.github.com/repos/IrineSistiana/simple-tls/releases"
+ENV SIMPLE_TLS_VER="latest"
+ENV V2RAY_URL="https://api.github.com/repos/shadowsocks/v2ray-plugin/releases"
+ENV V2RAY_VER="latest"
+ENV USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0"
+ENV CONFIG_PATH="/etc/shadowsocks"
 
-export SIMPLE_TLS_URL="https://api.github.com/repos/IrineSistiana/simple-tls/releases"
-export SIMPLE_TLS_VER="latest"
-
-export V2RAY_URL="https://api.github.com/repos/shadowsocks/v2ray-plugin/releases"
-export V2RAY_VER="latest"
-
-export USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0"
-
-export CONFIG_PATH="/etc/shadowsocks"
+COPY start.sh /start.sh
+COPY config.sh /config.sh
+COPY update.sh /update.sh
 
 export DEBIAN_FRONTEND=noninteractive \
+&& chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh \
 && apt-get update && apt-get upgrade -y \
 && apt-get install --no-install-recommends -y ca-certificates tzdata curl wget xz-utils unzip jq subversion moreutils libcap2-bin cron lsof \
 && mkdir /tmp/ss && cd /tmp/ss \
