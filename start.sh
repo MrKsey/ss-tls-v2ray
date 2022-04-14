@@ -6,12 +6,6 @@
 # Updates
 . /update.sh
 
-# Scheduled updates
-if [ ! -z "$UPDATE_SCHEDULE" ]; then
-    echo "$UPDATE_SCHEDULE /update.sh >> /var/log/cron.log 2>&1" | crontab -
-    cron -f >> /var/log/cron.log 2>&1&
-fi
-
 # Start services
 if [ ! -z "$(/etc/init.d/ss.sh status | grep "not started")" ] && [ "$SS_ENABLED" = "true" ]; then
     /etc/init.d/ss.sh start
