@@ -8,8 +8,8 @@ if [ -s $CONFIG_PATH/config.ini ]; then
     
     # Sync configuration files with github
     svn checkout $GIT_URL/trunk/config $CONFIG_PATH
-    chown -R root:root $CONFIG_PATH
-    chmod -R 644 $CONFIG_PATH
+    # chown -R root:root $CONFIG_PATH
+    # chmod -R 644 $CONFIG_PATH
 
     if [ "$MODE" = "client" ] && [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
@@ -20,8 +20,8 @@ else
 # First time run.
     # Download configuration files from github
     svn checkout $GIT_URL/trunk/config $CONFIG_PATH
-    chown -R root:root $CONFIG_PATH
-    chmod -R 644 $CONFIG_PATH
+    # chown -R root:root $CONFIG_PATH
+    # chmod -R 644 $CONFIG_PATH
 
     if [ -s $CONFIG_PATH/config.ini ]; then
         # Load config from config.ini
@@ -225,7 +225,6 @@ else
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-v2ray.sh /etc/init.d/
-
 fi
 
 # Save ENV VARS to file
