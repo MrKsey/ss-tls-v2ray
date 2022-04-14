@@ -63,7 +63,7 @@ sed -i "s/\"\"/\"/g" $CONFIG_PATH/config.ini
 
 # Add to cron scheduled updates
 if [ ! -z "$UPDATE_SCHEDULE" ]; then
-    echo "$(echo $UPDATE_SCHEDULE | sed 's/\\//g' | sed "s/\"//g") /update.sh >> /var/log/cron.log 2>&1" | crontab -
+    echo "$(echo "$UPDATE_SCHEDULE" | sed 's/\\//g' | sed "s/\"//g") /update.sh >> /var/log/cron.log 2>&1" | crontab -
     cron -f >> /var/log/cron.log 2>&1&
 fi
 
