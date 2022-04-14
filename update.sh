@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -s $CONFIG_PATH/.config.env ]; then
     set -a; . $CONFIG_PATH/.config.env; set +a
