@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Start load configs
 . $CONFIG_PATH/config.sh
