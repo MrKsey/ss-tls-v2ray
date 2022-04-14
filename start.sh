@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Start load configs
-. $CONFIG_PATH/config.sh
+. /config.sh
 
 # Updates
-. $CONFIG_PATH/update.sh
+. /update.sh
 
 # Scheduled updates
 if [ ! -z "$UPDATE_SCHEDULE" ]; then
-    echo "$UPDATE_SCHEDULE $CONFIG_PATH/update.sh >> /var/log/cron.log 2>&1" | crontab -
+    echo "$UPDATE_SCHEDULE /update.sh >> /var/log/cron.log 2>&1" | crontab -
     cron -f >> /var/log/cron.log 2>&1&
 fi
 
