@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Start load configs
 if [ -s $CONFIG_PATH/config.ini ]; then
