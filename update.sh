@@ -62,3 +62,4 @@ if [ ! -z "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
 fi
 
 cd / && rm -rf /tmp/ss
+
