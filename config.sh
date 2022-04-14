@@ -4,7 +4,7 @@
 if [ -s $CONFIG_PATH/config.ini ]; then
     # Load config from config.ini
     sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
-    . $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
+	. $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
     
     # Sync configuration files with github
     svn checkout $GIT_URL/trunk/config $CONFIG_PATH
@@ -219,12 +219,13 @@ else
     export SIMPLE_TLS_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-simple-tls.json)
 	
     export V2RAY_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/client/ss-v2ray.json)
-    export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
+	export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
 	
     chmod -R a+x $CONFIG_PATH/client/ss*.sh
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-v2ray.sh /etc/init.d/
+
 fi
 
 # Save ENV VARS to file
