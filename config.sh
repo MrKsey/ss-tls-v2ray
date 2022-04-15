@@ -1,40 +1,53 @@
 #!/bin/bash
 
+echo " "
+echo "=================================================="
+echo "$(date): config.sh started"
+echo "=================================================="
+echo " "
+
 # Start load configs
 if [ -s $CONFIG_PATH/config.ini ]; then
     # Load config from config.ini
+    echo "$(date): Load config from config.ini"
     sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
 	. $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
     
     # Sync configuration files with github
+    echo "$(date): Sync configuration files with github"
     svn checkout $GIT_URL/trunk/config $CONFIG_PATH
     # chown -R root:root $CONFIG_PATH
     # chmod -R 644 $CONFIG_PATH
 
     if [ "$MODE" = "client" ] && [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
+	echo "$(date): Load config from _CLIENT.txt"
         sed -i -e "s/\r//g" $CONFIG_PATH/_CLIENT.txt
         . $CONFIG_PATH/_CLIENT.txt && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/_CLIENT.txt | cut -d= -f1)
     fi
 else
 # First time run.
     # Download configuration files from github
+    echo "$(date): Download configuration files from github"
     svn checkout $GIT_URL/trunk/config $CONFIG_PATH
     # chown -R root:root $CONFIG_PATH
     # chmod -R 644 $CONFIG_PATH
 
     if [ -s $CONFIG_PATH/config.ini ]; then
         # Load config from config.ini
+	echo "$(date): Load config from config.ini"
         sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
         . $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
     else
         # If config.ini not downloaded - create empty
+	echo "$(date): config.ini not downloaded, create empty"
         touch $CONFIG_PATH/config.ini
         tail -c1 $CONFIG_PATH/config.ini | read -r _ || echo >> $CONFIG_PATH/config.ini
     fi
 
     if [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
+	echo "$(date): Load config from _CLIENT.txt"
         sed -i -e "s/\r//g" $CONFIG_PATH/_CLIENT.txt
         . $CONFIG_PATH/_CLIENT.txt && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/_CLIENT.txt | cut -d= -f1)
         # if _CLIENT.txt exist - set mode of this node to client
@@ -44,6 +57,7 @@ fi
 
 
 # Check vars, set defaults in config.ini ==========================
+echo "$(date): Check vars, set defaults..."
 
 #  OS_UPDATE
 [ -z "$OS_UPDATE" ] && export OS_UPDATE=true
@@ -105,6 +119,7 @@ sed -i "/^V2RAY_DOMAIN=/{h;s/=.*/=${V2RAY_DOMAIN}/};\${x;/^$/{s//V2RAY_DOMAIN=${
 
 # if this node is server then generate _CLIENT.txt with data for client
 if [ "$MODE" = "server" ]; then
+    echo "$(date): MODE = server"
     # Create new _CLIENT.txt
     grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini > $CONFIG_PATH/_CLIENT.txt
     # Change MODE to client in _CLIENT.txt
@@ -180,13 +195,15 @@ if [ "$MODE" = "server" ]; then
     
     # grant permanent access to bind to low-numbered ports via the setcap
     setcap "cap_net_bind_service=+eip" /usr/local/bin/v2ray-*
-	
+
+    echo "$(date): Create links from $CONFIG_PATH/server to /etc/init.d"
     chmod -R a+x $CONFIG_PATH/server/ss*.sh
     ln -s -f $CONFIG_PATH/server/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-v2ray.sh /etc/init.d/
     
 else
+    echo "$(date): MODE = client"
     # if _CLIENT.txt exist apply setting to client files only once
     if [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         mv -f $CONFIG_PATH/_CLIENT.txt $CONFIG_PATH/_CLIENT.old.txt
@@ -225,19 +242,26 @@ else
     export SIMPLE_TLS_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-simple-tls.json)
 	
     export V2RAY_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/client/ss-v2ray.json)
-	export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
-	
+    export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
+
+    echo "$(date): Create links from $CONFIG_PATH/client to /etc/init.d"
     chmod -R a+x $CONFIG_PATH/client/ss*.sh
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-v2ray.sh /etc/init.d/
-
 fi
 
 # Save ENV VARS to file
+echo "$(date): Save ENV VARS to file"
 env | grep -v UPDATE_SCHEDULE | awk 'NF {sub("=","=\"",$0); print ""$0"\""}' > $CONFIG_PATH/.config.env && chmod 644 $CONFIG_PATH/.config.env
 
 # Colorize bash output
 echo "RED='\033[0;31m'" >> $CONFIG_PATH/.config.env
 echo "GREEN='\033[0;32m'" >> $CONFIG_PATH/.config.env
 echo "NC='\033[0m'" >> $CONFIG_PATH/.config.env
+
+echo " "
+echo "=================================================="
+echo "$(date): config.sh finished"
+echo "=================================================="
+echo " "
