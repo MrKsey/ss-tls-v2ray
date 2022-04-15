@@ -9,7 +9,7 @@ start() {
 }
 
 stop() {
-    pkill -f "v2ray -server -host $V2RAY_DOMAIN -localAddr 0.0.0.0 -localPort 80 -remoteAddr 127.0.0.1 -remotePort 8443 -loglevel none"
+    pkill -f "^"v2ray
 }
 
 status() {
