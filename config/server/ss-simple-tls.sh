@@ -9,7 +9,7 @@ start() {
 }
 
 stop() {
-    pkill -f "simple-tls -b :443 -d 127.0.0.1:8443 -s -key $CONFIG_PATH/server/simple-tls_cert.key -cert $CONFIG_PATH/server/simple-tls_cert.cert"
+    pkill -f "^"simple-tls
 }
 
 status() {
