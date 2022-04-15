@@ -7,6 +7,8 @@
 . /update.sh
 
 # Start services
+echo "$(date): Start services..."
+echo
 if [ ! -z "$(/etc/init.d/ss.sh status | grep "not started")" ] && [ "$SS_ENABLED" = "true" ]; then
     /etc/init.d/ss.sh start
 else
