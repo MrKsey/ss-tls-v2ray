@@ -31,6 +31,7 @@ if [ ! -z "$SS_GIT_VER" ] && [ "$SS_LOCAL_VER" != "$SS_GIT_VER" ]; then
     grep -i -E "$(dpkg --print-architecture | sed "s/amd64/x86_64/g" | sed "s/arm64/aarch64/g" | sed "s/armhf/arm.+eabihf/g")")
     if [ $? -eq 0 ]; then
         tar -xf ss.tar.xz --directory /usr/local/bin
+        chmod a+x /usr/local/bin/*
         SS_LOCAL_VER=$(/usr/local/bin/ssserver --version | cut -d ' ' -f 2)
         echo "$(date): ShadowSocks updated to version $SS_LOCAL_VER"
         if [ "$SS_ENABLED" = "true" ]; then
@@ -61,6 +62,7 @@ if [ ! -z "$SIMPLE_TLS_GIT_VER" ] && [ "$SIMPLE_TLS_LOCAL_VER" != "$SIMPLE_TLS_G
     grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-7/g")")
     if [ $? -eq 0 ]; then
         unzip -x -o simple_tls.zip simple-tls -d /usr/local/bin
+        chmod a+x /usr/local/bin/*
         SIMPLE_TLS_LOCAL_VER=$(/usr/local/bin/simple-tls -v 2>&1 | cut -d '-' -f 1)
         echo "$(date): Simple TLS updated to version $SIMPLE_TLS_LOCAL_VER"
         if [ "$SIMPLE_TLS_ENABLED" = "true" ]; then
@@ -87,6 +89,7 @@ if [ ! -z "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
     grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")")
     if [ $? -eq 0 ]; then
         tar -xf v2ray.tar.gz --directory /usr/local/bin && ln -s -f /usr/local/bin/v2ray-* /usr/local/bin/v2ray
+        chmod a+x /usr/local/bin/*
         V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2)
         echo "$(date): V2RAY updated to version $V2RAY_LOCAL_VER"
         if [ "$V2RAY_ENABLED" = "true" ]; then
