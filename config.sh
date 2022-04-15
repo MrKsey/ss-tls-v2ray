@@ -11,7 +11,7 @@ if [ -s $CONFIG_PATH/config.ini ]; then
     # Load config from config.ini
     echo "$(date): Load config from config.ini"
     sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
-	. $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
+    . $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
     
     # Sync configuration files with github
     echo "$(date): Sync configuration files with github"
@@ -201,7 +201,6 @@ if [ "$MODE" = "server" ]; then
     ln -s -f $CONFIG_PATH/server/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-v2ray.sh /etc/init.d/
-    
 else
     echo "$(date): MODE = client"
     # if _CLIENT.txt exist apply setting to client files only once
