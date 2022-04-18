@@ -66,8 +66,8 @@ sed -i "/^OS_UPDATE=/{h;s/=.*/=${OS_UPDATE}/};\${x;/^$/{s//OS_UPDATE=${OS_UPDATE
 
 #  UPDATE_SCHEDULE
 if [ -z "$UPDATE_SCHEDULE" ]; then
-    # generate update time in interval 2-4h and 0-59m 
-    UPDATE_H=$(shuf -i2-4 -n1)
+    # generate update time in interval 0-3h and 0-59m 
+    UPDATE_H=$(shuf -i0-3 -n1)
     UPDATE_M=$(shuf -i0-59 -n1)
     export UPDATE_SCHEDULE="\"$UPDATE_M $UPDATE_H \* \* \*\""
 fi
