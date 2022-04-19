@@ -12,12 +12,12 @@ if [ -s $CONFIG_PATH/config.ini ]; then
     echo "$(date): Load config from config.ini"
     sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
     . $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
-    
-    # Sync configuration files with github
-    echo "$(date): Sync configuration files with github"
-    svn checkout $GIT_URL/trunk/config $CONFIG_PATH
-    # chown -R root:root $CONFIG_PATH
-    # chmod -R 644 $CONFIG_PATH
+
+    if [ ! -d "$CONFIG_PATH/server" ] && [ ! -d "$CONFIG_PATH/client" ]; then
+        # Sync configuration files with github
+        echo "$(date): Sync configuration files with github"
+        svn checkout $GIT_URL/trunk/config $CONFIG_PATH
+    fi
 
     if [ "$MODE" = "client" ] && [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
@@ -27,11 +27,11 @@ if [ -s $CONFIG_PATH/config.ini ]; then
     fi
 else
 # First time run.
-    # Download configuration files from github
-    echo "$(date): Download configuration files from github"
-    svn checkout $GIT_URL/trunk/config $CONFIG_PATH
-    # chown -R root:root $CONFIG_PATH
-    # chmod -R 644 $CONFIG_PATH
+    if [ ! -d "$CONFIG_PATH/server" ] && [ ! -d "$CONFIG_PATH/client" ]; then
+        # Sync configuration files with github
+        echo "$(date): Sync configuration files with github"
+        svn checkout $GIT_URL/trunk/config $CONFIG_PATH
+    fi
 
     if [ -s $CONFIG_PATH/config.ini ]; then
         # Load config from config.ini
