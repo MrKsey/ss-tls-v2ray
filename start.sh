@@ -33,6 +33,7 @@ echo "==========================================================================
 /etc/init.d/ss-simple-tls.sh status
 echo "==========================================================================="
 /etc/init.d/ss-v2ray.sh status
+echo
 
 # endless work...
 tail -f /dev/null
