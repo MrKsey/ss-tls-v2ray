@@ -6,8 +6,8 @@ echo "$(date): update.sh started"
 echo "=================================================="
 echo " "
 
-if [ -s $CONFIG_PATH/.config.env ]; then
-    set -a; . $CONFIG_PATH/.config.env; set +a
+if [ -s /etc/shadowsocks/.config.env ]; then
+    set -a; . /etc/shadowsocks/.config.env; set +a
 fi
 
 # Update OS
