@@ -28,7 +28,7 @@ if [ ! -z "$SS_GIT_VER" ] && [ "$SS_LOCAL_VER" != "$SS_GIT_VER" ]; then
     echo "$(date): Updating ShadowSocks to version $SS_GIT_VER ..."
     wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/ss.tar.xz --tries=3 $(\
     curl -s $SS_URL/$SS_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep -i "gnu" | grep -i -v "sha256" | \
-    grep -i -E "$(dpkg --print-architecture | sed "s/amd64/x86_64/g" | sed "s/arm64/aarch64/g" | sed "s/armhf/arm.+eabihf/g")")
+    grep -i -E "$(dpkg --print-architecture | sed "s/amd64/x86_64/g" | sed "s/arm64/aarch64/g" | sed -E "s/armhf/arm.+eabihf/g")")
     if [ $? -eq 0 ]; then
         tar -xf ss.tar.xz --directory /usr/local/bin
         chmod a+x /usr/local/bin/*
@@ -88,7 +88,7 @@ if [ ! -z "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
     curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
     grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")")
     if [ $? -eq 0 ]; then
-        tar -xf v2ray.tar.gz --directory /usr/local/bin && ln -s -f /usr/local/bin/v2ray-* /usr/local/bin/v2ray
+        tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(dpkg --print-architecture | sed "s/armhf/_arm7/g")") && ln -s -f /usr/local/bin/v2ray-* /usr/local/bin/v2ray
         chmod a+x /usr/local/bin/*
         V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2)
         echo "$(date): V2RAY updated to version $V2RAY_LOCAL_VER"
