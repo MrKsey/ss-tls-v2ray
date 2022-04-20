@@ -38,7 +38,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 && wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 $(\
    curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-v/g")") \
-&& tar -xf v2ray.tar.gz --directory /usr/local/bin && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
+&& tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(dpkg --print-architecture | sed "s/armhf/_arm7/g")") && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
 && chown -R root:root /usr/local/bin && chmod -R a+x /usr/local/bin \
 && cd / && rm -rf /tmp/ss \
 && apt-get purge -y -q --auto-remove \
