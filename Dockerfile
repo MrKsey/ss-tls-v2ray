@@ -37,7 +37,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 && export V2RAY_VER=$([ "$V2RAY_VER" != "latest" ] && echo tags/$V2RAY_VER || echo $V2RAY_VER) \
 && wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 $(\
    curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
-   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")") \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-v/g")") \
 && tar -xf v2ray.tar.gz --directory /usr/local/bin && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
 && chown -R root:root /usr/local/bin && chmod -R a+x /usr/local/bin \
 && cd / && rm -rf /tmp/ss \
