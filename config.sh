@@ -161,8 +161,11 @@ if [ "$MODE" = "server" ]; then
     [ -z "$SS_MODE" ] && export SS_MODE="tcp_and_udp" && jq '."mode" = "'"$SS_MODE"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_MODE=/{h;s/=.*/=${SS_MODE}/};\${x;/^$/{s//SS_MODE=${SS_MODE}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
-    # SS_LINK ss://...
-    export SS_LINK="ss:\/\/"`echo -n $SS_METHOD:$SS_PASSWORD@$SS_SERVER_ADDR:$SS_SERVER_PORT | base64 -w0`
+    # SS_USERINFO - method + password encoded with Base64URL
+    export SS_USERINFO="ss:\/\/"`echo -n $SS_METHOD:$SS_PASSWORD | base64 -w0`
+    
+    # SS_LINK (SIP002 URI Scheme)
+    export SS_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$SS_SERVER_PORT#$(hostname)-ss"
     sed -i "/^SS_LINK=/{h;s/=.*/=${SS_LINK}/};\${x;/^$/{s//SS_LINK=${SS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
         
     # Set workers count
@@ -187,6 +190,11 @@ if [ "$MODE" = "server" ]; then
     SIMPLE_TLS_CERT=$(simple-tls -hash-cert $CONFIG_PATH/server/simple-tls_cert.cert | cut -d ':' -f 2 | tr -d ' ')
     sed -i "/^SIMPLE_TLS_CERT=/{h;s/=.*/=${SIMPLE_TLS_CERT}/};\${x;/^$/{s//SIMPLE_TLS_CERT=${SIMPLE_TLS_CERT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
+    # SIMPLE_TLS_LINK (SIP002 URI Scheme)
+    TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN" | jq -rR @uri)
+    export SIMPLE_TLS_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$SIMPLE_TLS_SERVER_PORT/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
+    sed -i "/^SIMPLE_TLS_LINK=/{h;s/=.*/=${SIMPLE_TLS_LINK}/};\${x;/^$/{s//SIMPLE_TLS_LINK=${SIMPLE_TLS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+    
     # grant permanent access to bind to low-numbered ports via the setcap
     setcap "cap_net_bind_service=+eip" /usr/local/bin/simple-tls
 
@@ -197,6 +205,11 @@ if [ "$MODE" = "server" ]; then
     sed -i "/^V2RAY_SERVER_PORT=/{h;s/=.*/=${V2RAY_SERVER_PORT}/};\${x;/^$/{s//V2RAY_SERVER_PORT=${V2RAY_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     # SS_SERVER_PORT -> ss-v2ray.sh
     sed -i -E "s/-remotePort [0-9]+/-remotePort ${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-v2ray.sh
+    
+    # V2RAY_LINK (SIP002 URI Scheme)
+    V2RAY_PLUGIN=$(echo "v2ray;host=$V2RAY_DOMAIN" | jq -rR @uri)
+    export V2RAY_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$V2RAY_SERVER_PORT/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
+    sed -i "/^V2RAY_LINK=/{h;s/=.*/=${V2RAY_LINK}/};\${x;/^$/{s//V2RAY_LINK=${V2RAY_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # grant permanent access to bind to low-numbered ports via the setcap
     setcap "cap_net_bind_service=+eip" /usr/local/bin/v2ray-*
