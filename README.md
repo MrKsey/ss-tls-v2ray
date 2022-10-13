@@ -24,14 +24,14 @@ More info:
 - https://github.com/IrineSistiana/simple-tls
 - https://github.com/shadowsocks/v2ray-plugin
 
-### Installing
+### How to install:
 - сreate "/ss" directory (for example) on your host
 - connect host directory "/ss" to the container directory "/etc/shadowsocks" and start container:
 ```
 docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /ss:/etc/shadowsocks ksey/ss-tls-v2ray
 ```
 
-### Shadowsocks server links and QR-codes:
+### View shadowsocks server links and QR-codes:
 To view QR-codes install python3-qrcode:
 ```
 sudo apt install python3-qrcode
