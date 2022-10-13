@@ -161,6 +161,10 @@ if [ "$MODE" = "server" ]; then
     [ -z "$SS_MODE" ] && export SS_MODE="tcp_and_udp" && jq '."mode" = "'"$SS_MODE"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_MODE=/{h;s/=.*/=${SS_MODE}/};\${x;/^$/{s//SS_MODE=${SS_MODE}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
+    # SS_LINK ss://...
+    export SS_LINK="ss://"`echo -n $SS_METHOD:$SS_PASSWORD@$SS_SERVER_ADDR:$SS_SERVER_PORT | base64 -w0`
+    sed -i "/^SS_LINK=/{h;s/=.*/=${SS_LINK}/};\${x;/^$/{s//SS_LINK=${SS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+        
     # Set workers count
     CPU_COUNT=$(lscpu | grep -E "^CPU\(s\)\:" | tr -d ' ' | cut -d ':' -f 2)
     [ $CPU_COUNT -gt 1 ] && jq '."workers" = '$CPU_COUNT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
