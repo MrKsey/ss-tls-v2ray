@@ -54,3 +54,12 @@ cat /ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+" | qr
 cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+"
 cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
 ```
+
+### Update image and container:
+
+```
+sudo docker stop ss-tls-v2ray
+sudo docker rm ss-tls-v2ray
+sudo docker image rm ksey/ss-tls-v2ray
+sudo docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /ss:/etc/shadowsocks ksey/ss-tls-v2ray
+```
