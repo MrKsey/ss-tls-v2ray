@@ -162,7 +162,7 @@ if [ "$MODE" = "server" ]; then
     sed -i "/^SS_MODE=/{h;s/=.*/=${SS_MODE}/};\${x;/^$/{s//SS_MODE=${SS_MODE}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # SS_LINK ss://...
-    export SS_LINK="ss://"`echo -n $SS_METHOD:$SS_PASSWORD@$SS_SERVER_ADDR:$SS_SERVER_PORT | base64 -w0`
+    export SS_LINK="ss:\/\/"`echo -n $SS_METHOD:$SS_PASSWORD@$SS_SERVER_ADDR:$SS_SERVER_PORT | base64 -w0`
     sed -i "/^SS_LINK=/{h;s/=.*/=${SS_LINK}/};\${x;/^$/{s//SS_LINK=${SS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
         
     # Set workers count
