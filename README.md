@@ -30,3 +30,27 @@ More info:
 ```
 docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /ss:/etc/shadowsocks ksey/ss-tls-v2ray
 ```
+
+### Shadowsocks server links and QR-codes:
+To view QR-codes install python3-qrcode:
+```
+sudo apt install python3-qrcode
+export PYTHONIOENCODING=utf8
+```
+- Shadowsocks link and qr-code:
+```
+cat /ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+"
+cat /ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+" | qr
+```
+
+- Simple-tls link and qr-code:
+```
+cat /ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+"
+cat /ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+" | qr
+```
+
+- V2ray link and qr-code:
+```
+cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+"
+cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
+```
