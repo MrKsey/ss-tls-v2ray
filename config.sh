@@ -34,10 +34,7 @@ else
     fi
 
     if [ -s $CONFIG_PATH/config.ini ]; then
-        # Load config from config.ini
-	echo "$(date): Load config from config.ini"
         sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
-        . $CONFIG_PATH/config.ini && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini | cut -d= -f1)
     else
         # If config.ini not downloaded - create empty
 	echo "$(date): config.ini not downloaded, create empty"
