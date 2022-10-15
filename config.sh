@@ -170,9 +170,13 @@ if [ "$MODE" = "server" ]; then
     export SS_USERINFO="ss:\/\/"`echo -n $SS_METHOD:$SS_PASSWORD | base64 -w0`
     
     # SS_LINK (SIP002 URI Scheme)
-    export SS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SS_SERVER_PORT#$(hostname)-ss"
+    if [ "$SS_ENABLED" = "true" ]; then
+        export SS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SS_SERVER_PORT#$(hostname)-ss"
+    else
+        export SS_LINK=""
+    fi
     sed -i "/^SS_LINK=/{h;s/=.*/=${SS_LINK}/};\${x;/^$/{s//SS_LINK=${SS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
-        
+            
     # Set workers count
     CPU_COUNT=$(lscpu | grep -E "^CPU\(s\)\:" | tr -d ' ' | cut -d ':' -f 2)
     [ $CPU_COUNT -gt 1 ] && jq '."workers" = '$CPU_COUNT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
@@ -197,8 +201,12 @@ if [ "$MODE" = "server" ]; then
     sed -i "/^SIMPLE_TLS_CERT=/{h;s/=.*/=${SIMPLE_TLS_CERT}/};\${x;/^$/{s//SIMPLE_TLS_CERT=${SIMPLE_TLS_CERT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # SIMPLE_TLS_LINK (SIP002 URI Scheme)
-    TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN" | jq -rR @uri)
-    export SIMPLE_TLS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SIMPLE_TLS_SERVER_PORT\/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
+    if [ "$SIMPLE_TLS_ENABLED" = "true" ]; then
+        TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN" | jq -rR @uri)
+        export SIMPLE_TLS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SIMPLE_TLS_SERVER_PORT\/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
+    else
+        export SIMPLE_TLS_LINK=""
+    fi
     sed -i "/^SIMPLE_TLS_LINK=/{h;s/=.*/=${SIMPLE_TLS_LINK}/};\${x;/^$/{s//SIMPLE_TLS_LINK=${SIMPLE_TLS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # grant permanent access to bind to low-numbered ports via the setcap
@@ -214,8 +222,12 @@ if [ "$MODE" = "server" ]; then
     sed -i -E "s/-remotePort [0-9]+/-remotePort ${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-v2ray.sh
     
     # V2RAY_LINK (SIP002 URI Scheme)
-    V2RAY_PLUGIN=$(echo "v2ray;host=$V2RAY_DOMAIN" | jq -rR @uri)
-    export V2RAY_LINK="$SS_USERINFO@$SERVER_WAN_IP:$V2RAY_SERVER_PORT\/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
+    if [ "$V2RAY_ENABLED" = "true" ]; then
+        V2RAY_PLUGIN=$(echo "v2ray;host=$V2RAY_DOMAIN" | jq -rR @uri)
+        export V2RAY_LINK="$SS_USERINFO@$SERVER_WAN_IP:$V2RAY_SERVER_PORT\/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
+    else
+        export V2RAY_LINK=""
+    fi
     sed -i "/^V2RAY_LINK=/{h;s/=.*/=${V2RAY_LINK}/};\${x;/^$/{s//V2RAY_LINK=${V2RAY_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # grant permanent access to bind to low-numbered ports via the setcap
