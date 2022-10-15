@@ -135,7 +135,7 @@ if [ "$MODE" = "server" ]; then
     # SS_SERVER_ADDR
     if [ "$SS_ENABLED" = "true" ]; then
         [ -z "$SS_SERVER_ADDR" ] && export SS_SERVER_ADDR=$(jq -r '."server"' $CONFIG_PATH/server/ss.json) 
-        [ -z "$SS_SERVER_ADDR" ] && export SS_SERVER_ADDR="0.0.0.0"
+        ( [ -z "$SS_SERVER_ADDR" ] || [ "$SS_SERVER_ADDR" = "127.0.0.1" ] ) && export SS_SERVER_ADDR="0.0.0.0"
     else
         export SS_SERVER_ADDR=127.0.0.1
     fi
