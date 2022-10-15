@@ -128,6 +128,10 @@ if [ "$MODE" = "server" ]; then
     
     # ShadowSocks ===============================
 
+    # WAN IP
+    SERVER_WAN_IP=$(curl ifconfig.me || curl checkip.amazonaws.com || curl ifconfig.co) && export SERVER_WAN_IP=$(echo $SERVER_WAN_IP | tr -d ' ')
+    [ ! -z "$SERVER_WAN_IP" ] && sed -i "/^SS_SERVER_ADDR=/{h;s/=.*/=${SERVER_WAN_IP}/};\${x;/^$/{s//SS_SERVER_ADDR=${SERVER_WAN_IP}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+
     # SS_SERVER_ADDR
     if [ "$SS_ENABLED" = "true" ]; then
         export SS_SERVER_ADDR=$(jq -r '."server"' $CONFIG_PATH/server/ss.json)
@@ -136,10 +140,7 @@ if [ "$MODE" = "server" ]; then
         export SS_SERVER_ADDR=127.0.0.1
         jq '."server" = "'"$SS_SERVER_ADDR"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     fi
-    # WAN IP -> SS_SERVER_ADDR
-    SERVER_WAN_IP=$(curl ifconfig.me || curl checkip.amazonaws.com || curl ifconfig.co) && export SERVER_WAN_IP=$(echo $SERVER_WAN_IP | tr -d ' ')
-    [ ! -z "$SERVER_WAN_IP" ] && export SS_SERVER_ADDR="$SERVER_WAN_IP" && sed -i "/^SS_SERVER_ADDR=/{h;s/=.*/=${SERVER_WAN_IP}/};\${x;/^$/{s//SS_SERVER_ADDR=${SERVER_WAN_IP}/;H};x}" $CONFIG_PATH/_CLIENT.txt
-
+    
     # SS_SERVER_PORT
     export SS_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/server/ss.json)
     [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=8443 && jq '."server_port" = '$SS_SERVER_PORT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
@@ -165,7 +166,7 @@ if [ "$MODE" = "server" ]; then
     export SS_USERINFO="ss:\/\/"`echo -n $SS_METHOD:$SS_PASSWORD | base64 -w0`
     
     # SS_LINK (SIP002 URI Scheme)
-    export SS_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$SS_SERVER_PORT#$(hostname)-ss"
+    export SS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SS_SERVER_PORT#$(hostname)-ss"
     sed -i "/^SS_LINK=/{h;s/=.*/=${SS_LINK}/};\${x;/^$/{s//SS_LINK=${SS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
         
     # Set workers count
@@ -192,7 +193,7 @@ if [ "$MODE" = "server" ]; then
     
     # SIMPLE_TLS_LINK (SIP002 URI Scheme)
     TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN" | jq -rR @uri)
-    export SIMPLE_TLS_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$SIMPLE_TLS_SERVER_PORT\/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
+    export SIMPLE_TLS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SIMPLE_TLS_SERVER_PORT\/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
     sed -i "/^SIMPLE_TLS_LINK=/{h;s/=.*/=${SIMPLE_TLS_LINK}/};\${x;/^$/{s//SIMPLE_TLS_LINK=${SIMPLE_TLS_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # grant permanent access to bind to low-numbered ports via the setcap
@@ -208,7 +209,7 @@ if [ "$MODE" = "server" ]; then
     
     # V2RAY_LINK (SIP002 URI Scheme)
     V2RAY_PLUGIN=$(echo "v2ray;host=$V2RAY_DOMAIN" | jq -rR @uri)
-    export V2RAY_LINK="$SS_USERINFO@$SS_SERVER_ADDR:$V2RAY_SERVER_PORT\/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
+    export V2RAY_LINK="$SS_USERINFO@$SERVER_WAN_IP:$V2RAY_SERVER_PORT\/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
     sed -i "/^V2RAY_LINK=/{h;s/=.*/=${V2RAY_LINK}/};\${x;/^$/{s//V2RAY_LINK=${V2RAY_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # grant permanent access to bind to low-numbered ports via the setcap
