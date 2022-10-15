@@ -134,32 +134,36 @@ if [ "$MODE" = "server" ]; then
 
     # SS_SERVER_ADDR
     if [ "$SS_ENABLED" = "true" ]; then
-        export SS_SERVER_ADDR=$(jq -r '."server"' $CONFIG_PATH/server/ss.json)
-        [ -z "$SS_SERVER_ADDR" ] && export SS_SERVER_ADDR="0.0.0.0" && jq '."server" = "'"$SS_SERVER_ADDR"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
+        [ -z "$SS_SERVER_ADDR" ] && export SS_SERVER_ADDR=$(jq -r '."server"' $CONFIG_PATH/server/ss.json) 
+        [ -z "$SS_SERVER_ADDR" ] && export SS_SERVER_ADDR="0.0.0.0"
     else
         export SS_SERVER_ADDR=127.0.0.1
-        jq '."server" = "'"$SS_SERVER_ADDR"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     fi
+    jq '."server" = "'"$SS_SERVER_ADDR"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     
     # SS_SERVER_PORT
-    export SS_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/server/ss.json)
-    [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=8443 && jq '."server_port" = '$SS_SERVER_PORT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
+    [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/server/ss.json)
+    [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=8443
+    jq '."server_port" = '$SS_SERVER_PORT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_SERVER_PORT=/{h;s/=.*/=${SS_SERVER_PORT}/};\${x;/^$/{s//SS_SERVER_PORT=${SS_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
 
     # SS_PASSWORD
-    export SS_PASSWORD=$(jq -r '."password"' $CONFIG_PATH/server/ss.json)
+    [ -z "$SS_PASSWORD" ] && export SS_PASSWORD=$(jq -r '."password"' $CONFIG_PATH/server/ss.json)
     # If empty - generate new password
-    [ -z "$SS_PASSWORD" ] && export SS_PASSWORD=$(openssl rand -base64 48 | tr -d /=+ | cut -c -40) && jq '."password" = "'"$SS_PASSWORD"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
+    [ -z "$SS_PASSWORD" ] && export SS_PASSWORD=$(openssl rand -base64 48 | tr -d /=+ | cut -c -40)
+    jq '."password" = "'"$SS_PASSWORD"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_PASSWORD=/{h;s/=.*/=${SS_PASSWORD}/};\${x;/^$/{s//SS_PASSWORD=${SS_PASSWORD}/;H};x}" $CONFIG_PATH/_CLIENT.txt
 
     # SS_METHOD
-    export SS_METHOD=$(jq -r '."method"' $CONFIG_PATH/server/ss.json)
-    [ -z "$SS_METHOD" ] && export SS_METHOD="chacha20-ietf-poly1305" && jq '."method" = "'"$SS_METHOD"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
+    [ -z "$SS_METHOD" ] && export SS_METHOD=$(jq -r '."method"' $CONFIG_PATH/server/ss.json)
+    [ -z "$SS_METHOD" ] && export SS_METHOD="chacha20-ietf-poly1305"
+    jq '."method" = "'"$SS_METHOD"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_METHOD=/{h;s/=.*/=${SS_METHOD}/};\${x;/^$/{s//SS_METHOD=${SS_METHOD}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # SS_MODE
-    export SS_MODE=$(jq -r '."mode"' $CONFIG_PATH/server/ss.json)
-    [ -z "$SS_MODE" ] && export SS_MODE="tcp_and_udp" && jq '."mode" = "'"$SS_MODE"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
+    [ -z "$SS_MODE" ] && export SS_MODE=$(jq -r '."mode"' $CONFIG_PATH/server/ss.json)
+    [ -z "$SS_MODE" ] && export SS_MODE="tcp_and_udp"
+    jq '."mode" = "'"$SS_MODE"'"' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
     sed -i "/^SS_MODE=/{h;s/=.*/=${SS_MODE}/};\${x;/^$/{s//SS_MODE=${SS_MODE}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
     # SS_USERINFO - method + password encoded with Base64URL
@@ -179,7 +183,8 @@ if [ "$MODE" = "server" ]; then
     # SIMPLE_TLS ===============================
      
     # SIMPLE_TLS_SERVER_PORT
-    export SIMPLE_TLS_SERVER_PORT=$(grep -o -P "\-b.+?:[0-9]+" $CONFIG_PATH/server/ss-simple-tls.sh | cut -d ':' -f 2)
+    [ -z "$SIMPLE_TLS_SERVER_PORT" ] && export SIMPLE_TLS_SERVER_PORT=$(grep -o -P "\-b.+?:[0-9]+" $CONFIG_PATH/server/ss-simple-tls.sh | cut -d ':' -f 2)
+    [ -z "$SIMPLE_TLS_SERVER_PORT" ] && export SIMPLE_TLS_SERVER_PORT=443
     sed -i "/^SIMPLE_TLS_SERVER_PORT=/{h;s/=.*/=${SIMPLE_TLS_SERVER_PORT}/};\${x;/^$/{s//SIMPLE_TLS_SERVER_PORT=${SIMPLE_TLS_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     # SS_SERVER_PORT -> ss-simple-tls.sh
     sed -i -E "s/(\-d.+?:)[0-9]+/\\1${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
@@ -202,7 +207,8 @@ if [ "$MODE" = "server" ]; then
     # V2RAY ===============================
     
     # V2RAY_SERVER_PORT
-    export V2RAY_SERVER_PORT=$(grep -o -P "\-localPort [0-9]+" $CONFIG_PATH/server/ss-v2ray.sh | cut -d ' ' -f 2)
+    [ -z "$V2RAY_SERVER_PORT" ] && export V2RAY_SERVER_PORT=$(grep -o -P "\-localPort [0-9]+" $CONFIG_PATH/server/ss-v2ray.sh | cut -d ' ' -f 2)
+    [ -z "$V2RAY_SERVER_PORT" ] && export V2RAY_SERVER_PORT=80
     sed -i "/^V2RAY_SERVER_PORT=/{h;s/=.*/=${V2RAY_SERVER_PORT}/};\${x;/^$/{s//V2RAY_SERVER_PORT=${V2RAY_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     # SS_SERVER_PORT -> ss-v2ray.sh
     sed -i -E "s/-remotePort [0-9]+/-remotePort ${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-v2ray.sh
