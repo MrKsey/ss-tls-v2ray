@@ -20,7 +20,7 @@ COPY update.sh /update.sh
 COPY ps_exit.sh /ps_exit.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-&& chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh \
+&& chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh && chmod a+x /ps_exit.sh \
 && apt-get update && apt-get upgrade -y \
 && apt-get install --no-install-recommends -y ca-certificates tzdata curl wget xz-utils unzip jq subversion moreutils libcap2-bin cron lsof dos2unix \
 && dos2unix /start.sh && dos2unix /config.sh && dos2unix /update.sh && dos2unix /ps_exit.sh \
