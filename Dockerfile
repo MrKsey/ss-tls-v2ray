@@ -17,6 +17,7 @@ ENV CONFIG_PATH="/etc/shadowsocks"
 COPY start.sh /start.sh
 COPY config.sh /config.sh
 COPY update.sh /update.sh
+COPY ps_exit.sh /ps_exit.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive \
 && chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh \
