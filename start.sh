@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Trap signals for graceful shutdown container
+trap "/ps_exit.sh" SIGTERM
+
 # Start load configs
 . /config.sh
 
@@ -36,4 +39,4 @@ echo "==========================================================================
 echo
 
 # endless work...
-tail -f /dev/null
+tail -f /dev/null & wait ${!}
