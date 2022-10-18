@@ -190,8 +190,12 @@ if [ "$MODE" = "server" ]; then
     sed -i -E "s/\-b :[0-9]+/\-b :${SIMPLE_TLS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
     sed -i -E "s/(\-d.+?:)[0-9]+/\\1${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
 
-    # generate cert for domain
-    if [ ! -s $CONFIG_PATH/server/simple-tls_cert.key ] || [ ! -s $CONFIG_PATH/server/simple-tls_cert.cert ]; then 
+    # Check if user set new domain for simple-tls
+    OLD_SIMPLE_TLS_DOMAIN=$(grep SIMPLE_TLS_DOMAIN $CONFIG_PATH/_CLIENT.txt | cut -d '=' -f 2)
+    if [ "$SIMPLE_TLS_DOMAIN" != "$OLD_SIMPLE_TLS_DOMAIN" ] || [ ! -s $CONFIG_PATH/server/simple-tls_cert.key ] || [ ! -s $CONFIG_PATH/server/simple-tls_cert.cert ]; then
+        # generate cert for domain
+        [ -s $CONFIG_PATH/server/simple-tls_cert.key ] && rm -f $CONFIG_PATH/server/simple-tls_cert.key
+        [ -s $CONFIG_PATH/server/simple-tls_cert.cert ] && rm -f $CONFIG_PATH/server/simple-tls_cert.cert
         simple-tls -gen-cert -n $SIMPLE_TLS_DOMAIN -key $CONFIG_PATH/server/simple-tls_cert.key -cert $CONFIG_PATH/server/simple-tls_cert.cert
     fi
     SIMPLE_TLS_CERT=$(simple-tls -hash-cert $CONFIG_PATH/server/simple-tls_cert.cert | cut -d ':' -f 2 | tr -d ' ')
