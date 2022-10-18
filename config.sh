@@ -118,6 +118,10 @@ sed -i "/^V2RAY_DOMAIN=/{h;s/=.*/=${V2RAY_DOMAIN}/};\${x;/^$/{s//V2RAY_DOMAIN=${
 # if this node is server then generate _CLIENT.txt with data for client
 if [ "$MODE" = "server" ]; then
     echo "$(date): MODE = server"
+    
+    # Set old domain for simple-tls
+    export OLD_SIMPLE_TLS_DOMAIN=$(grep SIMPLE_TLS_DOMAIN $CONFIG_PATH/_CLIENT.txt | cut -d '=' -f 2)
+    
     # Create new _CLIENT.txt
     grep -E ^[a-zA-Z] $CONFIG_PATH/config.ini > $CONFIG_PATH/_CLIENT.txt
     # Change MODE to client in _CLIENT.txt
@@ -190,8 +194,7 @@ if [ "$MODE" = "server" ]; then
     sed -i -E "s/\-b :[0-9]+/\-b :${SIMPLE_TLS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
     sed -i -E "s/(\-d.+?:)[0-9]+/\\1${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
 
-    # Check if user set new domain for simple-tls
-    OLD_SIMPLE_TLS_DOMAIN=$(grep SIMPLE_TLS_DOMAIN $CONFIG_PATH/_CLIENT.txt | cut -d '=' -f 2)
+    # SIMPLE_TLS_DOMAIN
     if [ "$SIMPLE_TLS_DOMAIN" != "$OLD_SIMPLE_TLS_DOMAIN" ] || [ ! -s $CONFIG_PATH/server/simple-tls_cert.key ] || [ ! -s $CONFIG_PATH/server/simple-tls_cert.cert ]; then
         # generate cert for domain
         [ -s $CONFIG_PATH/server/simple-tls_cert.key ] && rm -f $CONFIG_PATH/server/simple-tls_cert.key
