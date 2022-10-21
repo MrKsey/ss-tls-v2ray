@@ -21,7 +21,7 @@ mkdir -p /tmp/ss && cd /tmp/ss
 
 # Update ShadowSocks
 SS_VER=$([ "$SS_VER" != "latest" ] && echo tags/$SS_VER || echo $SS_VER)
-SS_LOCAL_VER=$(/usr/local/bin/ssserver --version | cut -d ' ' -f 2)
+SS_LOCAL_VER=$(/usr/local/bin/ssserver --version | cut -d ' ' -f 2 | sed -E "s/^[a-zA-Z]//")
 SS_GIT_VER=$(curl -f -s $SS_URL/$SS_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for ShadowSocks updates ..."
 if [ ! -z "$SS_GIT_VER" ] && [ "$SS_LOCAL_VER" != "$SS_GIT_VER" ]; then
@@ -52,8 +52,8 @@ fi
 
 # Update Simple TLS
 SIMPLE_TLS_VER=$([ "$SIMPLE_TLS_VER" != "latest" ] && echo tags/$SIMPLE_TLS_VER || echo $SIMPLE_TLS_VER)
-SIMPLE_TLS_LOCAL_VER=$(/usr/local/bin/simple-tls -v 2>&1 | cut -d '-' -f 1)
-SIMPLE_TLS_GIT_VER=$(curl -f -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | jq -r '."tag_name"')
+SIMPLE_TLS_LOCAL_VER=$(/usr/local/bin/simple-tls -v 2>&1 | cut -d '-' -f 1 | sed -E "s/^[a-zA-Z]//")
+SIMPLE_TLS_GIT_VER=$(curl -f -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for Simple TLS updates ..."
 if [ ! -z "$SIMPLE_TLS_GIT_VER" ] && [ "$SIMPLE_TLS_LOCAL_VER" != "$SIMPLE_TLS_GIT_VER" ]; then
     echo "$(date): Updating Simple TLS to version $SIMPLE_TLS_GIT_VER ..."
@@ -79,8 +79,8 @@ fi
 
 # Update V2RAY
 V2RAY_VER=$([ "$V2RAY_VER" != "latest" ] && echo tags/$V2RAY_VER || echo $V2RAY_VER)
-V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2)
-V2RAY_GIT_VER=$(curl -f -s $V2RAY_URL/$V2RAY_VER | jq -r '."tag_name"')
+V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2 | sed -E "s/^[a-zA-Z]//")
+V2RAY_GIT_VER=$(curl -f -s $V2RAY_URL/$V2RAY_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for V2RAY updates ..."
 if [ ! -z "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
     echo "$(date): Updating V2RAY to version $V2RAY_GIT_VER ..."
