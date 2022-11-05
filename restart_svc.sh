@@ -46,7 +46,7 @@ else
 fi
 
 # Start new monitoring config.ini
-ls /etc/shadowsocks/config.ini | entr -psz 'echo "$(date): config.ini changed. Applying new settings..." && /config.sh && /restart_svc.sh' &
+ls /etc/shadowsocks/config.ini | entr -npsz 'echo "$(date): config.ini changed. Applying new settings..." && /config.sh && /restart_svc.sh' &
 
 echo " "
 echo "=================================================="
