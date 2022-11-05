@@ -9,7 +9,7 @@ v2ray and simple-tls is obfuscation plugins for Shadowsocks. The purpose of this
 - automatic generation password for Shadowsocks
 - automatic generation certificate for simple-tls 
 - 3 types independent tunnels: shadowsocks-rust, v2ray and simple-tls
-- automatic client configuration (simply put CLIENT.txt from server to client folder /ss and start container).
+- automatic client configuration (simply put _CLIENT.txt from server to client folder /ss and start container).
 
 ### Default mode - server
 
