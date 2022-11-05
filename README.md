@@ -25,10 +25,10 @@ More info:
 - https://github.com/shadowsocks/v2ray-plugin
 
 ### How to install:
-- сreate "/ss" directory (for example) on your host
-- connect host directory "/ss" to the container directory "/etc/shadowsocks" and start container:
+- сreate "/docker/ss" directory (for example) on your host
+- connect host directory "/docker/ss" to the container directory "/etc/shadowsocks" and start container:
 ```
-docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /ss:/etc/shadowsocks ksey/ss-tls-v2ray
+docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /docker/ss:/etc/shadowsocks ksey/ss-tls-v2ray
 ```
 
 ### View shadowsocks server links and QR-codes:
@@ -39,20 +39,20 @@ export PYTHONIOENCODING=utf8
 ```
 - Shadowsocks link and qr-code:
 ```
-cat /ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+"
-cat /ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+" | qr
+cat /docker/ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+"
+cat /docker/ss/_CLIENT.txt | grep SS_LINK | grep -E -o "ss://.+" | qr
 ```
 
 - Simple-tls link and qr-code:
 ```
-cat /ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+"
-cat /ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+" | qr
+cat /docker/ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+"
+cat /docker/ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+" | qr
 ```
 
 - V2ray link and qr-code:
 ```
-cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+"
-cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
+cat /docker/ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+"
+cat /docker/ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
 ```
 
 ### Update image and container:
@@ -61,5 +61,5 @@ cat /ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
 sudo docker stop ss-tls-v2ray
 sudo docker rm ss-tls-v2ray
 sudo docker image rm ksey/ss-tls-v2ray
-sudo docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /ss:/etc/shadowsocks ksey/ss-tls-v2ray
+sudo docker run --name ss-tls-v2ray -d --restart=unless-stopped --net=host -v /docker/ss:/etc/shadowsocks ksey/ss-tls-v2ray
 ```
