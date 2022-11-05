@@ -22,9 +22,9 @@ else
         /etc/init.d/ss.sh restart
         sleep 3
         /etc/init.d/ss.sh status
-	else
-	    /etc/init.d/ss.sh stop
-	fi
+    else
+        /etc/init.d/ss.sh stop
+    fi
 fi
 
 # Restart Simple TLS
