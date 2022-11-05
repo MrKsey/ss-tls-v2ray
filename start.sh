@@ -27,7 +27,7 @@ if [ ! -z "$(/etc/init.d/ss-v2ray.sh status | grep "not started")" ] && [ "$V2RA
 fi
 
 sleep 5
-echo
+echo " "
 echo "==========================================================================="
 echo "$(date): Services status:"
 echo "==========================================================================="
@@ -36,7 +36,13 @@ echo "==========================================================================
 /etc/init.d/ss-simple-tls.sh status
 echo "==========================================================================="
 /etc/init.d/ss-v2ray.sh status
-echo
+echo " "
+
+# Start monitoring config.ini
+echo "==========================================================================="
+echo "Start monitoring config.ini..."
+echo " "
+ls /etc/shadowsocks/config.ini | entr -psz 'echo "$(date): config.ini changed. Applying new settings..." && /config.sh && /restart_svc.sh' &
 
 # endless work...
 tail -f /dev/null & wait ${!}
