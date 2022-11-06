@@ -6,8 +6,6 @@ echo "$(date): restart_svc.sh started"
 echo "=================================================="
 echo " "
 
-echo "$(date): config.ini"
-
 if [ -s /etc/shadowsocks/.config.env ]; then
     set -a; . /etc/shadowsocks/.config.env; set +a
 fi
