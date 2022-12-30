@@ -28,5 +28,5 @@ server {
                 limit_req zone=limitreqsbyaddr;
         }
 
-        location /AUTO-$V2RAY_CLIENT_NUMBER-$V2RAY_SECRET { proxy_pass http://127.0.0.1:$V2RAY_SERVER_PORT/; proxy_redirect off; proxy_buffering off; proxy_http_version 1.1; proxy_set_header Host $http_host; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; }
+        location /AUTO-$V2RAY_CLIENT_NUMBER-$V2RAY_CLIENT_SECRET { proxy_pass http://127.0.0.1:$V2RAY_SERVER_PORT/; proxy_redirect off; proxy_buffering off; proxy_http_version 1.1; proxy_set_header Host $http_host; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; }
 }
