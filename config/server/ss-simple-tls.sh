@@ -13,9 +13,9 @@ stop() {
 }
 
 status() {
-    STATUS=$(lsof -i -P -n | grep simple-tl); [ -z "$STATUS" ] && \
+    STATUS=$(netstat -tulpn | grep simple-tl); [ -z "$STATUS" ] && \
     printf "${RED}Server SIMPLE-TLS is not started.${NC}\nThe network port ${RED}$SIMPLE_TLS_SERVER_PORT${NC} may already be in use. Change port parameter ${RED}-b${NC} in ../server/${RED}ss-simple-tls.sh${NC} and restart server\n" || 
-    printf "${GREEN}Server SIMPLE-TLS is running:${NC}\n"; lsof -i -P -n | grep simple-tl
+    printf "${GREEN}Server SIMPLE-TLS is running:${NC}\n"; netstat -tulpn | grep simple-tl
 }
 
 case "$1" in 
