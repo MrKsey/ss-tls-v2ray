@@ -13,9 +13,9 @@ stop() {
 }
 
 status() {
-    STATUS=$(lsof -i -P -n | grep v2ray); [ -z "$STATUS" ] && \
+    STATUS=$(netstat -tulpn | grep v2ray); [ -z "$STATUS" ] && \
     printf "${RED}Server V2RAY is not started.${NC}\nThe network port ${RED}$V2RAY_SERVER_PORT${NC} may already be in use. Change port parameter ${RED}-localPort${NC} in ../server/${RED}ss-v2ray.sh${NC} and restart server\n" || 
-    printf "${GREEN}Server V2RAY is running:${NC}\n"; lsof -i -P -n | grep v2ray
+    printf "${GREEN}Server V2RAY is running:${NC}\n"; netstat -tulpn | grep v2ray
 }
 
 case "$1" in 
