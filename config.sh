@@ -16,7 +16,13 @@ if [ -s $CONFIG_PATH/config.ini ]; then
     if [ ! -d "$CONFIG_PATH/server" ] && [ ! -d "$CONFIG_PATH/client" ]; then
         # Sync configuration files with github
         echo "$(date): Sync configuration files with github"
-        svn checkout $GIT_URL/trunk/config $CONFIG_PATH
+        cd /tmp
+        git clone --sparse --depth 1 --filter=blob:none https://github.com/$OWNER/$REPO.git
+        cd $REPO
+        git sparse-checkout init --cone
+        git sparse-checkout set config
+        cp --update=none -R ./config/. $CONFIG_PATH
+        rm -rf /tmp/$REPO
     fi
 
     if [ "$MODE" = "client" ] && [ -s $CONFIG_PATH/_CLIENT.txt ]; then
@@ -30,7 +36,13 @@ else
     if [ ! -d "$CONFIG_PATH/server" ] && [ ! -d "$CONFIG_PATH/client" ]; then
         # Sync configuration files with github
         echo "$(date): Sync configuration files with github"
-        svn checkout $GIT_URL/trunk/config $CONFIG_PATH
+        cd /tmp
+        git clone --sparse --depth 1 --filter=blob:none https://github.com/$OWNER/$REPO.git
+        cd $REPO
+        git sparse-checkout init --cone
+        git sparse-checkout set config
+        cp --update=none -R ./config/. $CONFIG_PATH
+        rm -rf /tmp/$REPO
     fi
 
     if [ -s $CONFIG_PATH/config.ini ]; then
@@ -305,3 +317,4 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
+
