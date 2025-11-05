@@ -10,5 +10,6 @@
   "mode": "tcp_only",
   "local_address": "0.0.0.0",
   "local_port": 1080,
-  "plugin": "v2ray"
+  "plugin": "v2ray",
+  "plugin_opts": "path=$V2RAY_PATH;host=$V2RAY_DOMAIN"
 }
