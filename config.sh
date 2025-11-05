@@ -125,7 +125,10 @@ sed -i "/^V2RAY_VER=/{h;s/=.*/=${V2RAY_VER}/};\${x;/^$/{s//V2RAY_VER=${V2RAY_VER
 #  V2RAY_DOMAIN
 [ -z "$V2RAY_DOMAIN" ] && export V2RAY_DOMAIN=windowsupdate.microsoft.com
 sed -i "/^V2RAY_DOMAIN=/{h;s/=.*/=${V2RAY_DOMAIN}/};\${x;/^$/{s//V2RAY_DOMAIN=${V2RAY_DOMAIN}/;H};x}" $CONFIG_PATH/config.ini
-
+#  V2RAY_PATH
+[ ! -z "$V2RAY_PATH" ] && export V2RAY_PATH="$(echo $V2RAY_PATH | tr -s '/')" || export V2RAY_PATH="/"
+V2RAY_PATH_TMP="$(echo $V2RAY_PATH | sed "s@\/@\\\/@g")"
+sed -i "/^V2RAY_PATH=/{h;s/=.*/=${V2RAY_PATH_TMP}/};\${x;/^$/{s//V2RAY_PATH=${V2RAY_PATH_TMP}/;H};x}" $CONFIG_PATH/config.ini
 
 # if this node is server then generate _CLIENT.txt with data for client
 if [ "$MODE" = "server" ]; then
@@ -239,7 +242,7 @@ if [ "$MODE" = "server" ]; then
     
     # V2RAY_LINK (SIP002 URI Scheme)
     if [ "$V2RAY_ENABLED" = "true" ]; then
-        V2RAY_PLUGIN=$(echo "v2ray;host=$V2RAY_DOMAIN" | jq -rR @uri)
+        V2RAY_PLUGIN=$(echo "v2ray;path=$V2RAY_PATH;host=$V2RAY_DOMAIN" | jq -rR @uri)
         export V2RAY_LINK="$SS_USERINFO@$SERVER_WAN_IP:$V2RAY_SERVER_PORT\/?plugin=$V2RAY_PLUGIN#$(hostname)-v2ray"
     else
         export V2RAY_LINK=""
@@ -317,4 +320,5 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
+
 
