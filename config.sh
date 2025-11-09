@@ -177,7 +177,8 @@ if [ "$MODE" = "server" ]; then
     [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/server/ss.json)
     [ -z "$SS_SERVER_PORT" ] && export SS_SERVER_PORT=8443
     jq '."server_port" = '$SS_SERVER_PORT'' $CONFIG_PATH/server/ss.json | sponge $CONFIG_PATH/server/ss.json
-    sed -i "/^SS_SERVER_PORT=/{h;s/=.*/=${SS_SERVER_PORT}/};\${x;/^$/{s//SS_SERVER_PORT=${SS_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+	sed -i "/^SS_SERVER_PORT=/{h;s/=.*/=${SS_SERVER_PORT}/};\${x;/^$/{s//SS_SERVER_PORT=${SS_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+	sed -i "/^SS_SERVER_PORT=/{h;s/=.*/=${SS_SERVER_PORT}/};\${x;/^$/{s//SS_SERVER_PORT=${SS_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
 
     # SS_PASSWORD
     [ -z "$SS_PASSWORD" ] && export SS_PASSWORD=$(jq -r '."password"' $CONFIG_PATH/server/ss.json)
@@ -222,6 +223,7 @@ if [ "$MODE" = "server" ]; then
     [ -z "$SIMPLE_TLS_SERVER_PORT" ] && export SIMPLE_TLS_SERVER_PORT=$(grep -o -P "\-b.+?:[0-9]+" $CONFIG_PATH/server/ss-simple-tls.sh | cut -d ':' -f 2)
     [ -z "$SIMPLE_TLS_SERVER_PORT" ] && export SIMPLE_TLS_SERVER_PORT=443
     sed -i "/^SIMPLE_TLS_SERVER_PORT=/{h;s/=.*/=${SIMPLE_TLS_SERVER_PORT}/};\${x;/^$/{s//SIMPLE_TLS_SERVER_PORT=${SIMPLE_TLS_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+	sed -i "/^SIMPLE_TLS_SERVER_PORT=/{h;s/=.*/=${SIMPLE_TLS_SERVER_PORT}/};\${x;/^$/{s//SIMPLE_TLS_SERVER_PORT=${SIMPLE_TLS_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
     sed -i -E "s/\-b :[0-9]+/\-b :${SIMPLE_TLS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
     sed -i -E "s/(\-d.+?:)[0-9]+/\\1${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-simple-tls.sh
 
@@ -253,6 +255,7 @@ if [ "$MODE" = "server" ]; then
     [ -z "$V2RAY_SERVER_PORT" ] && export V2RAY_SERVER_PORT=$(grep -o -P "\-localPort [0-9]+" $CONFIG_PATH/server/ss-v2ray.sh | cut -d ' ' -f 2)
     [ -z "$V2RAY_SERVER_PORT" ] && export V2RAY_SERVER_PORT=80
     sed -i "/^V2RAY_SERVER_PORT=/{h;s/=.*/=${V2RAY_SERVER_PORT}/};\${x;/^$/{s//V2RAY_SERVER_PORT=${V2RAY_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+	sed -i "/^V2RAY_SERVER_PORT=/{h;s/=.*/=${V2RAY_SERVER_PORT}/};\${x;/^$/{s//V2RAY_SERVER_PORT=${V2RAY_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
     sed -i -E "s/\-localPort [0-9]+/\-localPort ${V2RAY_SERVER_PORT}/" $CONFIG_PATH/server/ss-v2ray.sh
     sed -i -E "s/-remotePort [0-9]+/-remotePort ${SS_SERVER_PORT}/" $CONFIG_PATH/server/ss-v2ray.sh
     
@@ -336,6 +339,7 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
+
 
 
 
