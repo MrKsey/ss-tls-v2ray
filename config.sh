@@ -27,7 +27,7 @@ if [ -s $CONFIG_PATH/config.ini ]; then
 
     if [ "$MODE" = "client" ] && [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
-	echo "$(date): Load config from _CLIENT.txt"
+	    echo "$(date): Load config from _CLIENT.txt"
         sed -i -e "s/\r//g" $CONFIG_PATH/_CLIENT.txt
         . $CONFIG_PATH/_CLIENT.txt && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/_CLIENT.txt | cut -d= -f1)
     fi
@@ -114,6 +114,22 @@ sed -i "/^SIMPLE_TLS_VER=/{h;s/=.*/=${SIMPLE_TLS_VER}/};\${x;/^$/{s//SIMPLE_TLS_
 #  SIMPLE_TLS_DOMAIN
 [ -z "$SIMPLE_TLS_DOMAIN" ] && export SIMPLE_TLS_DOMAIN=windowsupdate.microsoft.com
 sed -i "/^SIMPLE_TLS_DOMAIN=/{h;s/=.*/=${SIMPLE_TLS_DOMAIN}/};\${x;/^$/{s//SIMPLE_TLS_DOMAIN=${SIMPLE_TLS_DOMAIN}/;H};x}" $CONFIG_PATH/config.ini
+#  SIMPLE_TLS_GRPC_PATH
+[ ! -z "$SIMPLE_TLS_GRPC_PATH" ] && export SIMPLE_TLS_GRPC_PATH="$(echo $SIMPLE_TLS_GRPC_PATH | tr -s '/')" || export SIMPLE_TLS_GRPC_PATH="/"
+SIMPLE_TLS_GRPC_PATH_TMP="$(echo $SIMPLE_TLS_GRPC_PATH | sed "s@\/@\\\/@g")"
+sed -i "/^SIMPLE_TLS_GRPC_PATH=/{h;s/=.*/=${SIMPLE_TLS_GRPC_PATH_TMP}/};\${x;/^$/{s//SIMPLE_TLS_GRPC_PATH=${SIMPLE_TLS_GRPC_PATH_TMP}/;H};x}" $CONFIG_PATH/config.ini
+# SIMPLE_TLS_GRPC_ENABLED
+if [ -z "$SIMPLE_TLS_GRPC_ENABLED" ]; then
+    export SIMPLE_TLS_GRPC_ENABLED=false
+	export GRPC_SERVER=""
+	export GRPC_CLIENT=""
+fi
+if [ "$SIMPLE_TLS_GRPC_ENABLED" != "false" ]; then
+    export SIMPLE_TLS_GRPC_ENABLED=true
+	export GRPC_SERVER="-grpc -grpc-path=$SIMPLE_TLS_GRPC_PATH"
+	export GRPC_CLIENT="grpc;grpc-path=$SIMPLE_TLS_GRPC_PATH"
+fi
+sed -i "/^SIMPLE_TLS_GRPC_ENABLED=/{h;s/=.*/=${SIMPLE_TLS_GRPC_ENABLED}/};\${x;/^$/{s//SIMPLE_TLS_GRPC_ENABLED=${SIMPLE_TLS_GRPC_ENABLED}/;H};x}" $CONFIG_PATH/config.ini
 
 #  V2RAY_ENABLED
 [ -z "$V2RAY_ENABLED" ] && export V2RAY_ENABLED=true
@@ -221,7 +237,7 @@ if [ "$MODE" = "server" ]; then
     
     # SIMPLE_TLS_LINK (SIP002 URI Scheme)
     if [ "$SIMPLE_TLS_ENABLED" = "true" ]; then
-        TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN" | jq -rR @uri)
+        TLS_PLUGIN=$(echo "simple-tls;cert-hash=$SIMPLE_TLS_CERT;no-verify;n=$SIMPLE_TLS_DOMAIN;$GRPC_CLIENT" | jq -rR @uri)
         export SIMPLE_TLS_LINK="$SS_USERINFO@$SERVER_WAN_IP:$SIMPLE_TLS_SERVER_PORT\/?plugin=$TLS_PLUGIN#$(hostname)-simple-tls"
     else
         export SIMPLE_TLS_LINK=""
@@ -320,5 +336,6 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
+
 
 
