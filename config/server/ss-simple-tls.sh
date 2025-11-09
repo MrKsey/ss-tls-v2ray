@@ -5,7 +5,7 @@
 . $CONFIG_PATH/.config.env
 
 start() {
-    simple-tls -b :443 -d 127.0.0.1:8443 -s -key $CONFIG_PATH/server/simple-tls_cert.key -cert $CONFIG_PATH/server/simple-tls_cert.cert &
+    simple-tls -b :443 -d 127.0.0.1:8443 -s -key $CONFIG_PATH/server/simple-tls_cert.key -cert $CONFIG_PATH/server/simple-tls_cert.cert "$GRPC_SERVER" &
 }
 
 stop() {
