@@ -126,7 +126,7 @@ if [ -z "$SIMPLE_TLS_GRPC_ENABLED" ]; then
 fi
 if [ "$SIMPLE_TLS_GRPC_ENABLED" != "false" ]; then
     export SIMPLE_TLS_GRPC_ENABLED=true
-	export GRPC_SERVER="-grpc -grpc-path=$SIMPLE_TLS_GRPC_PATH"
+	export GRPC_SERVER="-grpc -grpc-path $SIMPLE_TLS_GRPC_PATH"
 	export GRPC_CLIENT="grpc;grpc-path=$SIMPLE_TLS_GRPC_PATH"
 fi
 sed -i "/^SIMPLE_TLS_GRPC_ENABLED=/{h;s/=.*/=${SIMPLE_TLS_GRPC_ENABLED}/};\${x;/^$/{s//SIMPLE_TLS_GRPC_ENABLED=${SIMPLE_TLS_GRPC_ENABLED}/;H};x}" $CONFIG_PATH/config.ini
@@ -336,6 +336,7 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
+
 
 
 
