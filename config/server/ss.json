@@ -8,7 +8,7 @@
   "fast_open": true,
   "reuse_port": true,
   "workers": 1,
-  "ipv6_first": true,
+  "ipv6_first": false,
   "nameserver": "1.1.1.1",
   "mode": "tcp_and_udp"
 }
