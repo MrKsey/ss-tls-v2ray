@@ -64,7 +64,7 @@ else
     fi
 
     # Change IPv4 priority over IPv6
-    echo "precedence ::ffff:0:0/96  100" >> /etc/gai.conf
+    echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
 fi
 
 
