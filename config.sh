@@ -49,19 +49,22 @@ else
         sed -i -e "s/\r//g" $CONFIG_PATH/config.ini
     else
         # If config.ini not downloaded - create empty
-	echo "$(date): config.ini not downloaded, create empty"
+        echo "$(date): config.ini not downloaded, create empty"
         touch $CONFIG_PATH/config.ini
         tail -c1 $CONFIG_PATH/config.ini | read -r _ || echo >> $CONFIG_PATH/config.ini
     fi
 
     if [ -s $CONFIG_PATH/_CLIENT.txt ]; then
         # Load config from _CLIENT.txt
-	echo "$(date): Load config from _CLIENT.txt"
+        echo "$(date): Load config from _CLIENT.txt"
         sed -i -e "s/\r//g" $CONFIG_PATH/_CLIENT.txt
         . $CONFIG_PATH/_CLIENT.txt && export $(grep -E ^[a-zA-Z] $CONFIG_PATH/_CLIENT.txt | cut -d= -f1)
         # if _CLIENT.txt exist - set mode of this node to client
         export MODE=client
     fi
+
+    # Change IPv4 priority over IPv6
+    echo "precedence ::ffff:0:0/96  100" >> /etc/gai.conf
 fi
 
 
