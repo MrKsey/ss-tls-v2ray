@@ -14,6 +14,8 @@ ENV SIMPLE_TLS_URL="https://api.github.com/repos/IrineSistiana/simple-tls/releas
 ENV SIMPLE_TLS_VER="latest"
 ENV V2RAY_URL="https://api.github.com/repos/shadowsocks/v2ray-plugin/releases"
 ENV V2RAY_VER="latest"
+ENV CLOACK_URL="https://api.github.com/repos/cbeuw/Cloak/releases"
+ENV CLOACK_VER="latest"
 ENV USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0"
 ENV CONFIG_PATH="/etc/shadowsocks"
 
@@ -44,6 +46,15 @@ RUN export DEBIAN_FRONTEND=noninteractive \
    curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-v/g")") \
 && tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(dpkg --print-architecture | sed "s/armhf/_arm7/g")") && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
+&& export CLOACK_VER=$([ "$CLOACK_VER" != "latest" ] && echo tags/$CLOACK_VER || echo $CLOACK_VER) \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-server --tries=3 $(\
+   curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep server | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")") \
+&& cp /tmp/ss/cloack-server /usr/local/bin/ \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-client --tries=3 $(\
+   curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep client | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")") \
+&& cp /tmp/ss/cloack-client /usr/local/bin/ \
 && chown -R root:root /usr/local/bin && chmod -R a+x /usr/local/bin \
 && cd / && rm -rf /tmp/ss \
 && apt-get purge -y -q --auto-remove \
