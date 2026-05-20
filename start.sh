@@ -26,6 +26,14 @@ if [ ! -z "$(/etc/init.d/ss-v2ray.sh status | grep "not started")" ] && [ "$V2RA
     /etc/init.d/ss-v2ray.sh start
 fi
 
+if [ ! -z "$(/etc/init.d/cloack_server.sh status 2>/dev/null | grep "not started")" ] && [ "$CLOACK_ENABLED" = "true" ]; then
+    /etc/init.d/cloack_server.sh start
+fi
+
+if [ ! -z "$(/etc/init.d/cloack_client.sh status 2>/dev/null | grep "not started")" ] && [ "$CLOACK_ENABLED" = "true" ]; then
+    /etc/init.d/cloack_client.sh start
+fi
+
 sleep 5
 echo " "
 echo "==========================================================================="
@@ -36,6 +44,9 @@ echo "==========================================================================
 /etc/init.d/ss-simple-tls.sh status
 echo "==========================================================================="
 /etc/init.d/ss-v2ray.sh status
+echo "==========================================================================="
+/etc/init.d/cloack_server.sh status 2>/dev/null
+/etc/init.d/cloack_client.sh status 2>/dev/null
 echo " "
 
 # Start monitoring config.ini
@@ -46,4 +57,3 @@ echo " "
 
 # endless work...
 tail -f /dev/null & wait ${!}
-
