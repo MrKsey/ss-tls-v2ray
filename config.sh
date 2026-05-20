@@ -149,11 +149,28 @@ sed -i "/^V2RAY_DOMAIN=/{h;s/=.*/=${V2RAY_DOMAIN}/};\${x;/^$/{s//V2RAY_DOMAIN=${
 V2RAY_PATH_TMP="$(echo $V2RAY_PATH | sed "s@\/@\\\/@g")"
 sed -i "/^V2RAY_PATH=/{h;s/=.*/=${V2RAY_PATH_TMP}/};\${x;/^$/{s//V2RAY_PATH=${V2RAY_PATH_TMP}/;H};x}" $CONFIG_PATH/config.ini
 
+#  CLOACK_ENABLED
+[ -z "$CLOACK_ENABLED" ] && export CLOACK_ENABLED=true
+[ "$CLOACK_ENABLED" != "true" ] && export CLOACK_ENABLED=false
+sed -i "/^CLOACK_ENABLED=/{h;s/=.*/=${CLOACK_ENABLED}/};\${x;/^$/{s//CLOACK_ENABLED=${CLOACK_ENABLED}/;H};x}" $CONFIG_PATH/config.ini
+#  CLOACK_VER
+[ -z "$CLOACK_VER" ] && export CLOACK_VER=latest
+sed -i "/^CLOACK_VER=/{h;s/=.*/=${CLOACK_VER}/};\${x;/^$/{s//CLOACK_VER=${CLOACK_VER}/;H};x}" $CONFIG_PATH/config.ini
+#  CLOACK_DOMAIN
+[ -z "$CLOACK_DOMAIN" ] && export CLOACK_DOMAIN="assets.adobe.com"
+sed -i "/^CLOACK_DOMAIN=/{h;s/=.*/=${CLOACK_DOMAIN}/};\${x;/^$/{s//CLOACK_DOMAIN=${CLOACK_DOMAIN}/;H};x}" $CONFIG_PATH/config.ini
+# CLOACK_LOCAL_PORT - for client only
+[ -z "$CLOACK_LOCAL_PORT" ] && export CLOACK_LOCAL_PORT=3053
+sed -i "/^CLOACK_LOCAL_PORT=/{h;s/=.*/=${CLOACK_LOCAL_PORT}/};\${x;/^$/{s//CLOACK_LOCAL_PORT=${CLOACK_LOCAL_PORT}/;H};x}" $CONFIG_PATH/config.ini
+# SS_CLOACK_LOCAL_PORT - for client only
+[ -z "$SS_CLOACK_LOCAL_PORT" ] && export SS_CLOACK_LOCAL_PORT=1053
+sed -i "/^SS_CLOACK_LOCAL_PORT=/{h;s/=.*/=${SS_CLOACK_LOCAL_PORT}/};\${x;/^$/{s//SS_CLOACK_LOCAL_PORT=${SS_CLOACK_LOCAL_PORT}/;H};x}" $CONFIG_PATH/config.ini
+
 # if this node is server then generate _CLIENT.txt with data for client
 if [ "$MODE" = "server" ]; then
     echo "$(date): MODE = server"
     
-    # Set old domain for simple-tls
+    # Save current SIMPLE_TLS_DOMAIN
     export OLD_SIMPLE_TLS_DOMAIN=$(grep SIMPLE_TLS_DOMAIN $CONFIG_PATH/_CLIENT.txt | cut -d '=' -f 2)
     
     # Create new _CLIENT.txt
@@ -164,7 +181,7 @@ if [ "$MODE" = "server" ]; then
     # ShadowSocks ===============================
 
     # WAN IP
-    SERVER_WAN_IP=$(curl ifconfig.me || curl checkip.amazonaws.com || curl ifconfig.co) && export SERVER_WAN_IP=$(echo $SERVER_WAN_IP | tr -d ' ')
+    SERVER_WAN_IP=$(curl -4 ifconfig.me || curl checkip.amazonaws.com || curl ifconfig.co) && export SERVER_WAN_IP=$(echo $SERVER_WAN_IP | tr -d ' ')
     [ ! -z "$SERVER_WAN_IP" ] && sed -i "/^SS_SERVER_ADDR=/{h;s/=.*/=${SERVER_WAN_IP}/};\${x;/^$/{s//SS_SERVER_ADDR=${SERVER_WAN_IP}/;H};x}" $CONFIG_PATH/_CLIENT.txt
 
     # SS_SERVER_ADDR
@@ -273,12 +290,76 @@ if [ "$MODE" = "server" ]; then
     
     # grant permanent access to bind to low-numbered ports via the setcap
     setcap "cap_net_bind_service=+eip" /usr/local/bin/v2ray-*
+   
+    
+    # CLOACK ===============================
+     
+    # CLOACK_SERVER_PORT
+    [ -z "$CLOACK_SERVER_PORT" ] && export CLOACK_SERVER_PORT=$(jq -r '."BindAddr".[0]' $CONFIG_PATH/server/ckserver.json | grep -E -o "[0-9]+")
+    [ -z "$CLOACK_SERVER_PORT" ] && export CLOACK_SERVER_PORT=2053
+    sed -i "/^CLOACK_SERVER_PORT=/{h;s/=.*/=${CLOACK_SERVER_PORT}/};\${x;/^$/{s//CLOACK_SERVER_PORT=${CLOACK_SERVER_PORT}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+	sed -i "/^CLOACK_SERVER_PORT=/{h;s/=.*/=${CLOACK_SERVER_PORT}/};\${x;/^$/{s//CLOACK_SERVER_PORT=${CLOACK_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
+    
+    # CLOACK_KEY
+    CLOACK_PRIVATE_KEY=$(jq -r '."PrivateKey"' $CONFIG_PATH/server/ckserver.json)   
+    if [ -z "$CLOACK_PRIVATE_KEY" ]; then
+        # Generating CLOACK private and public keys
+        OUTPUT=$(cloack-server -key)
+        CLOACK_PUBLIC_KEY="$(echo "$OUTPUT" | awk '/PUBLIC/ {print $NF}')"
+        CLOACK_PRIVATE_KEY="$(echo "$OUTPUT" | awk '/PRIVATE/ {print $NF}')"
+    fi
+    sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+    
+    # CLOACK_ADMIN_UID
+    CLOACK_ADMIN_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
+    if [ -z "$CLOACK_ADMIN_UID" ]; then
+        CLOACK_ADMIN_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
+    fi
+    
+    # CLOACK_USER_UID
+    CLOACK_USER_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
+    if [ -z "$CLOACK_USER_UID" ]; then
+        CLOACK_USER_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
+    fi
+    sed -i "/^CLOACK_USER_UID=/{h;s/=.*/=${CLOACK_USER_UID}/};\${x;/^$/{s//CLOACK_USER_UID=${CLOACK_USER_UID}/;H};x}" $CONFIG_PATH/_CLIENT.txt 
+    
+      
+    jq --arg SS_SERVER_PORT "$SS_SERVER_PORT" \
+       --arg CLOACK_SERVER_PORT "$CLOACK_SERVER_PORT" \
+       --arg CLOACK_USER_UID "$CLOACK_USER_UID" \
+       --arg CLOACK_DOMAIN "$CLOACK_DOMAIN" \
+       --arg CLOACK_PRIVATE_KEY "$CLOACK_PRIVATE_KEY" \
+       --arg CLOACK_ADMIN_UID "$CLOACK_ADMIN_UID" \
+       '.ProxyBook.shadowsocks[1] = "127.0.0.1:\($SS_SERVER_PORT)" | 
+       .BindAddr[0] = "[::]:\($CLOACK_SERVER_PORT)" |
+       .BypassUID[0] = $CLOACK_USER_UID | 
+       .RedirAddr = $CLOACK_DOMAIN | 
+       .PrivateKey = $CLOACK_PRIVATE_KEY | 
+       .AdminUID = $CLOACK_ADMIN_UID' /etc/shadowsocks/server/ckserver-template.json > /etc/shadowsocks/server/ckserver.json
+    
+    
+    # CLOACK_LINK (SIP002 URI Scheme)
+    if [ "$CLOACK_ENABLED" = "true" ]; then
+        CLOACK_PLUGIN=$(echo "cloack-client;StreamTimeout=300;PublicKey=$CLOACK_PUBLIC_KEY;EncryptionMethod=plain;ProxyMethod=shadowsocks;UID=$CLOACK_USER_UID;CDNWsUrlPath=;AlternativeNames=;KeepAlive=0;ServerName=$CLOACK_DOMAIN;BrowserSig=chrome;Transport=direct;CDNOriginHost=;NumConn=4" | jq -rR @uri)
+        export CLOACK_LINK="$SS_USERINFO@$SERVER_WAN_IP:$CLOACK_SERVER_PORT\/?plugin=$CLOACK_PLUGIN#$(hostname)-cloack"
+    else
+        export CLOACK_LINK=""
+    fi
+    sed -i "/^CLOACK_LINK=/{h;s/=.*/=${CLOACK_LINK}/};\${x;/^$/{s//CLOACK_LINK=${CLOACK_LINK}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+    
+    # grant permanent access to bind to low-numbered ports via the setcap
+    setcap "cap_net_bind_service=+eip" /usr/local/bin/cloack-server
+    
 
     echo "$(date): Create links from $CONFIG_PATH/server to /etc/init.d"
     chmod -R a+x $CONFIG_PATH/server/ss*.sh
     ln -s -f $CONFIG_PATH/server/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-v2ray.sh /etc/init.d/
+    
+    rm /etc/init.d/cloack_client.sh 2>/dev/null
+    ln -s -f $CONFIG_PATH/server/cloack_server.sh /etc/init.d/
+    
 else
     echo "$(date): MODE = client"
     # if _CLIENT.txt exist apply setting to client files only once
@@ -309,6 +390,17 @@ else
         [ ! -z "$SS_PASSWORD" ] && jq '."password" = "'"$SS_PASSWORD"'"' $CONFIG_PATH/client/ss-v2ray.json | sponge $CONFIG_PATH/client/ss-v2ray.json
         [ ! -z "$SS_METHOD" ] && jq '."method" = "'"$SS_METHOD"'"' $CONFIG_PATH/client/ss-v2ray.json | sponge $CONFIG_PATH/client/ss-v2ray.json
         [ $CPU_COUNT -gt 1 ] && jq '."workers" = '$CPU_COUNT'' $CONFIG_PATH/client/ss-v2ray.json | sponge $CONFIG_PATH/client/ss-v2ray.json
+        
+        # CLOACK client ====================================
+        jq --arg CLOACK_USER_UID "$CLOACK_USER_UID" \
+           --arg CLOACK_PUBLIC_KEY "$CLOACK_PUBLIC_KEY" \
+           --arg CLOACK_DOMAIN "$CLOACK_DOMAIN" \
+           '.UID = $CLOACK_USER_UID | .PublicKey = $CLOACK_PUBLIC_KEY | .ServerName = $CLOACK_DOMAIN' $CONFIG_PATH/client/ckclient-template.json > $CONFIG_PATH/client/ckclient.json
+                
+        jq --argjson CLOACK_LOCAL_PORT "${CLOACK_LOCAL_PORT}" \
+           --arg SS_CLOACK_LOCAL_PORT "${SS_CLOACK_LOCAL_PORT}" \
+           --arg SS_PASSWORD "$SS_PASSWORD" \
+           '.server_port = $CLOACK_LOCAL_PORT | .local_port = ($SS_CLOACK_LOCAL_PORT | tonumber) | .password = $SS_PASSWORD' $CONFIG_PATH/client/ss-cloack-template.json > $CONFIG_PATH/client/ss-cloack.json
     fi
 	
     export SS_SERVER_ADDR=$(jq -r '."server"' $CONFIG_PATH/client/ss.json)
@@ -320,12 +412,16 @@ else
 	
     export V2RAY_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/client/ss-v2ray.json)
     export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
+       
 
     echo "$(date): Create links from $CONFIG_PATH/client to /etc/init.d"
     chmod -R a+x $CONFIG_PATH/client/ss*.sh
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-v2ray.sh /etc/init.d/
+    
+    rm /etc/init.d/cloack_server.sh 2>/dev/null
+    ln -s -f $CONFIG_PATH/client/cloack_client.sh /etc/init.d/
 fi
 
 # Save ENV VARS to file
@@ -342,8 +438,3 @@ echo "=================================================="
 echo "$(date): config.sh finished"
 echo "=================================================="
 echo " "
-
-
-
-
-
