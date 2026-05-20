@@ -11,6 +11,8 @@ pkill -15 cron
 /etc/init.d/ss-simple-tls.sh stop
 /etc/init.d/ss-v2ray.sh stop
 /etc/init.d/ss.sh stop
+/etc/init.d/cloack_server.sh stop
+/etc/init.d/cloack_client.sh stop
 
 sync
 
