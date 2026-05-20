@@ -104,6 +104,38 @@ else
     echo "$(date): V2RAY version $V2RAY_LOCAL_VER is latest. Nothing to update."
 fi
 
+# Update CLOACK
+if [ "$MODE" == "server" ]; then
+    CLOACK_ENDING="server"
+else
+    CLOACK_ENDING="client"
+fi
+CLOACK_VER=$([ "$CLOACK_VER" != "latest" ] && echo tags/$CLOACK_VER || echo $CLOACK_VER)
+CLOACK_LOCAL_VER=$(/usr/local/bin/cloack-$CLOACK_ENDING -v | grep -E -o "v[0-9.]+")
+CLOACK_GIT_VER=$(curl -f -s $CLOACK_URL/$CLOACK_VER | jq -r '."tag_name"')
+echo "$(date): Start checking for CLOACK updates ..."
+if [ ! -z "$CLOACK_GIT_VER" ] && [ "$CLOACK_LOCAL_VER" != "$CLOACK_GIT_VER" ]; then
+    echo "$(date): Updating CLOACK to version $CLOACK_GIT_VER ..."
+    wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-$CLOACK_ENDING --tries=3 $(\
+    curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep $CLOACK_ENDING | \
+    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")")
+    if [ $? -eq 0 ]; then
+        cp ./cloack-$CLOACK_ENDING /usr/local/bin/
+        chmod a+x /usr/local/bin/*
+        CLOACK_LOCAL_VER=$(/usr/local/bin/cloack-$CLOACK_ENDING -v | grep -E -o "v[0-9.]+")
+        echo "$(date): CLOACK updated to version $CLOACK_LOCAL_VER"
+        if [ "$CLOACK_ENABLED" = "true" ]; then
+            /etc/init.d/cloack_$CLOACK_ENDING.sh restart
+            sleep 3
+            /etc/init.d/cloack_$CLOACK_ENDING.sh status
+        fi
+    else
+        echo "$(date): Update CLOACK failed. Check update source url: $CLOACK_URL/$CLOACK_VER"
+    fi
+else
+    echo "$(date): CLOACK version $CLOACK_LOCAL_VER is latest. Nothing to update."
+fi
+
 cd / && rm -rf /tmp/ss
 
 echo " "
