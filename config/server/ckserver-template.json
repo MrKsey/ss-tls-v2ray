@@ -1,0 +1,18 @@
+{
+  "ProxyBook": {
+    "shadowsocks": [
+      "tcp",
+      "127.0.0.1:$SS_SERVER_PORT"
+    ]
+  },
+  "BindAddr": [
+    ":$CLOACK_SERVER_PORT"
+  ],
+  "BypassUID": [
+    "$CLOACK_USER_UID"
+  ],
+  "RedirAddr": "$CLOACK_DOMAIN",
+  "PrivateKey": "$CLOACK_KEY",
+  "AdminUID": "$CLOACK_ADMIN_UID",
+  "DatabasePath": "/etc/shadowsocks/cloack_userinfo.db"
+}
