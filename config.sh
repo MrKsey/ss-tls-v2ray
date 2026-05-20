@@ -412,9 +412,8 @@ else
 	
     export V2RAY_SERVER_PORT=$(jq -r '."server_port"' $CONFIG_PATH/client/ss-v2ray.json)
     export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
-       
 
-    echo "$(date): Create links from $CONFIG_PATH/client to /etc/init.d"
+	echo "$(date): Create links from $CONFIG_PATH/client to /etc/init.d"
     chmod -R a+x $CONFIG_PATH/client/ss*.sh
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
