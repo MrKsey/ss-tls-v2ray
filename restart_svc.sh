@@ -35,6 +35,15 @@ else
     /etc/init.d/ss-v2ray.sh stop
 fi
 
+# Restart CLOACK
+if [ "$CLOACK_ENABLED" = "true" ]; then
+    /etc/init.d/cloack_server.sh restart 2>/dev/null
+    /etc/init.d/cloack_client.sh restart 2>/dev/null
+else
+    /etc/init.d/cloack_server.sh stop 2>/dev/null
+    /etc/init.d/cloack_client.sh stop 2>/dev/null
+fi
+
 sleep 5
 echo " "
 echo "==========================================================================="
@@ -45,6 +54,9 @@ echo "==========================================================================
 /etc/init.d/ss-simple-tls.sh status
 echo "==========================================================================="
 /etc/init.d/ss-v2ray.sh status
+echo "==========================================================================="
+/etc/init.d/cloack_server.sh status 2>/dev/null
+/etc/init.d/cloack_client.sh status 2>/dev/null
 echo " "
 
 # Start new monitoring config.ini
