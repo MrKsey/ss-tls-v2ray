@@ -352,7 +352,7 @@ if [ "$MODE" = "server" ]; then
     
 
     echo "$(date): Create links from $CONFIG_PATH/server to /etc/init.d"
-    chmod -R a+x $CONFIG_PATH/server/ss*.sh
+    chmod -R a+x $CONFIG_PATH/server/*.sh
     ln -s -f $CONFIG_PATH/server/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/server/ss-v2ray.sh /etc/init.d/
@@ -414,7 +414,7 @@ else
     export V2RAY_LOCAL_PORT=$(jq -r '."local_port"' $CONFIG_PATH/client/ss-v2ray.json)
 
 	echo "$(date): Create links from $CONFIG_PATH/client to /etc/init.d"
-    chmod -R a+x $CONFIG_PATH/client/ss*.sh
+    chmod -R a+x $CONFIG_PATH/client/*.sh
     ln -s -f $CONFIG_PATH/client/ss.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-simple-tls.sh /etc/init.d/
     ln -s -f $CONFIG_PATH/client/ss-v2ray.sh /etc/init.d/
