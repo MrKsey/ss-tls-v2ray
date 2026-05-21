@@ -1,7 +1,7 @@
 # ss-tls-v2ray
-Server/client with shadowsocks-rust + v2ray (websocket-http) + simple-tls (TLS1.3) + cloack
+Server/client with shadowsocks-rust + v2ray (websocket-http) + simple-tls (TLS1.3) + cloack.
 Shadowsocks is a fast tunnel proxy that helps you bypass firewalls.
-v2ray and simple-tls is obfuscation plugins for Shadowsocks. The purpose of this plugins is to change the characteristics of network traffic so that it is not identified and subsequently blocked by network filtering devices.
+v2ray, simple-tls and cloack is obfuscation plugins for Shadowsocks. The purpose of this plugins is to change the characteristics of network traffic so that it is not identified and subsequently blocked by network filtering devices.
 
 ### Key futures:
 - autoupdates
@@ -14,10 +14,10 @@ v2ray and simple-tls is obfuscation plugins for Shadowsocks. The purpose of this
 ### Default mode - server
 
 ### Server default ports:
-shadowsocks-rust: 8443, simple-tls: 443, v2ray: 80
+shadowsocks-rust: 8443, simple-tls: 443, v2ray: 80, claock: 2053
 
 ### Cleint default ports:
-shadowsocks-rust: 1843, simple-tls: 1443, v2ray: 1080
+shadowsocks-rust: 1843, simple-tls: 1443, v2ray: 1080, cloack: 3053
 
 More info:
 - https://github.com/shadowsocks/shadowsocks-rust
