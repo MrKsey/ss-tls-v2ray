@@ -1,5 +1,5 @@
 #
-# Shadowsocks-rust + v2ray (websocket-http) + simple-tls (TLS1.3) + cloack
+# Shadowsocks-rust + v2ray (websocket-http) + simple-tls (TLS1.3)
 #
 
 FROM ubuntu:latest
@@ -31,25 +31,29 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 && apt-get install --no-install-recommends -y ca-certificates tzdata curl wget xz-utils unzip jq moreutils libcap2-bin cron net-tools dos2unix entr git \
 && dos2unix /start.sh && dos2unix /config.sh && dos2unix /update.sh && dos2unix /ps_exit.sh && dos2unix /restart_svc.sh \
 && mkdir /tmp/ss && cd /tmp/ss \
-&& export ARCH=$(dpkg --print-architecture) \
 && export SS_VER=$([ "$SS_VER" != "latest" ] && echo tags/$SS_VER || echo $SS_VER) \
-&& export SS_ASSET=$(curl -s $SS_URL/$SS_VER | jq -r '.assets[] | select(.name | test("x86_64|aarch64|armv7"; "i")) | select(.name | test("sha256"; "i") | not) | .browser_download_url' | head -1) \
-&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/ss.tar.xz --tries=3 $SS_ASSET \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/ss.tar.xz --tries=3 $(\
+   curl -s $SS_URL/$SS_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep -i "gnu" | grep -i -v "sha256" | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/amd64/x86_64/g" | sed "s/arm64/aarch64/g" | sed -E "s/armhf/arm.+eabihf/g")") \
 && tar -xf ss.tar.xz --directory /usr/local/bin \
 && export SIMPLE_TLS_VER=$([ "$SIMPLE_TLS_VER" != "latest" ] && echo tags/$SIMPLE_TLS_VER || echo $SIMPLE_TLS_VER) \
-&& export SIMPLE_ASSET=$(curl -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | jq -r '.assets[] | select(.name | test("linux"; "i")) | select(.name | test("'"$ARCH"'"; "i")) | .browser_download_url' | head -1) \
-&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/simple_tls.zip --tries=3 $SIMPLE_ASSET \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/simple_tls.zip --tries=3 $(\
+   curl -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-7/g")") \
 && unzip -x -o simple_tls.zip simple-tls -d /usr/local/bin \
 && export V2RAY_VER=$([ "$V2RAY_VER" != "latest" ] && echo tags/$V2RAY_VER || echo $V2RAY_VER) \
-&& export V2RAY_ASSET=$(curl -s $V2RAY_URL/$V2RAY_VER | jq -r '.assets[] | select(.name | test("linux"; "i")) | select(.name | test("'"$ARCH"'"; "i")) | .browser_download_url' | head -1) \
-&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 $V2RAY_ASSET \
-&& tar --directory /usr/local/bin -xf v2ray.tar.gz && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 $(\
+   curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-v/g")") \
+&& tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(dpkg --print-architecture | sed "s/armhf/_arm7/g")") && ln -f -s /usr/local/bin/v2ray-* /usr/local/bin/v2ray \
 && export CLOACK_VER=$([ "$CLOACK_VER" != "latest" ] && echo tags/$CLOACK_VER || echo $CLOACK_VER) \
-&& export CK_SERVER_ASSET=$(curl -s $CLOACK_URL/$CLOACK_VER | jq -r '.assets[] | select(.name | test("server"; "i")) | select(.name | test("'"$ARCH"'"; "i")) | .browser_download_url' | head -1) \
-&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-server --tries=3 $CK_SERVER_ASSET \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-server --tries=3 $(\
+   curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep server | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")") \
 && cp /tmp/ss/cloack-server /usr/local/bin/ \
-&& export CK_CLIENT_ASSET=$(curl -s $CLOACK_URL/$CLOACK_VER | jq -r '.assets[] | select(.name | test("client"; "i")) | select(.name | test("'"$ARCH"'"; "i")) | .browser_download_url' | head -1) \
-&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-client --tries=3 $CK_CLIENT_ASSET \
+&& wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-client --tries=3 $(\
+   curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep client | \
+   grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")") \
 && cp /tmp/ss/cloack-client /usr/local/bin/ \
 && chown -R root:root /usr/local/bin && chmod -R a+x /usr/local/bin \
 && cd / && rm -rf /tmp/ss \
