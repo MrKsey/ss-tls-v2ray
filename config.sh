@@ -340,7 +340,7 @@ if [ "$MODE" = "server" ]; then
     
     # CLOACK_LINK (SIP002 URI Scheme)
     if [ "$CLOACK_ENABLED" = "true" ]; then
-        CLOACK_PLUGIN=$(echo "cloack-client;StreamTimeout=300;PublicKey=$CLOACK_PUBLIC_KEY;EncryptionMethod=plain;ProxyMethod=shadowsocks;UID=$CLOACK_USER_UID;CDNWsUrlPath=;AlternativeNames=;KeepAlive=0;ServerName=$CLOACK_DOMAIN;BrowserSig=chrome;Transport=direct;CDNOriginHost=;NumConn=4" | jq -rR @uri)
+        CLOACK_PLUGIN=$(echo "cloack;StreamTimeout=300;PublicKey=$CLOACK_PUBLIC_KEY;EncryptionMethod=plain;ProxyMethod=shadowsocks;UID=$CLOACK_USER_UID;CDNWsUrlPath=;AlternativeNames=;KeepAlive=0;ServerName=$CLOACK_DOMAIN;BrowserSig=chrome;Transport=direct;CDNOriginHost=;NumConn=4" | jq -rR @uri)
         export CLOACK_LINK="$SS_USERINFO@$SERVER_WAN_IP:$CLOACK_SERVER_PORT\/?plugin=$CLOACK_PLUGIN#$(hostname)-cloack"
     else
         export CLOACK_LINK=""
