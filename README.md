@@ -23,6 +23,7 @@ More info:
 - https://github.com/shadowsocks/shadowsocks-rust
 - https://github.com/IrineSistiana/simple-tls
 - https://github.com/shadowsocks/v2ray-plugin
+- https://github.com/cbeuw/Cloak
 
 ### How to install:
 - сreate "/docker/ss" directory (for example) on your host
@@ -53,6 +54,12 @@ cat /docker/ss/_CLIENT.txt | grep SIMPLE_TLS_LINK | grep -E -o "ss://.+" | qr
 ```
 cat /docker/ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+"
 cat /docker/ss/_CLIENT.txt | grep V2RAY_LINK | grep -E -o "ss://.+" | qr
+```
+
+- Cloack link and qr-code:
+```
+cat /docker/ss/_CLIENT.txt | grep CLOACK_LINK | grep -E -o "ss://.+"
+cat /docker/ss/_CLIENT.txt | grep CLOACK_LINK | grep -E -o "ss://.+" | qr
 ```
 
 ### Update image and container:
