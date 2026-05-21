@@ -301,25 +301,25 @@ if [ "$MODE" = "server" ]; then
 	sed -i "/^CLOACK_SERVER_PORT=/{h;s/=.*/=${CLOACK_SERVER_PORT}/};\${x;/^$/{s//CLOACK_SERVER_PORT=${CLOACK_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
     
     # CLOACK_KEY
-    CLOACK_PRIVATE_KEY=$(jq -r '."PrivateKey"' $CONFIG_PATH/server/ckserver.json)   
+    CLOACK_PRIVATE_KEY=$(jq -r '."PrivateKey"' $CONFIG_PATH/server/ckserver.json 2>/dev/null)   
     if [ -z "$CLOACK_PRIVATE_KEY" ]; then
         # Generating CLOACK private and public keys
         OUTPUT=$(cloack-server -key)
         export CLOACK_PUBLIC_KEY="$(echo "$OUTPUT" | awk '/PUBLIC/ {print $NF}')"
         export CLOACK_PRIVATE_KEY="$(echo "$OUTPUT" | awk '/PRIVATE/ {print $NF}')"
+        sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     fi
-    sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
-    
+        
     # CLOACK_ADMIN_UID
     CLOACK_ADMIN_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
     if [ -z "$CLOACK_ADMIN_UID" ]; then
-        CLOACK_ADMIN_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
+        export CLOACK_ADMIN_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
     fi
     
     # CLOACK_USER_UID
     CLOACK_USER_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
     if [ -z "$CLOACK_USER_UID" ]; then
-        CLOACK_USER_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
+        export CLOACK_USER_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
     fi
     sed -i "/^CLOACK_USER_UID=/{h;s/=.*/=${CLOACK_USER_UID}/};\${x;/^$/{s//CLOACK_USER_UID=${CLOACK_USER_UID}/;H};x}" $CONFIG_PATH/_CLIENT.txt 
     
@@ -340,7 +340,7 @@ if [ "$MODE" = "server" ]; then
     
     # CLOACK_LINK (SIP002 URI Scheme)
     if [ "$CLOACK_ENABLED" = "true" ]; then
-        CLOACK_PLUGIN=$(echo "cloack;StreamTimeout=300;PublicKey=$CLOACK_PUBLIC_KEY;EncryptionMethod=plain;ProxyMethod=shadowsocks;UID=$CLOACK_USER_UID;CDNWsUrlPath=;AlternativeNames=;KeepAlive=0;ServerName=$CLOACK_DOMAIN;BrowserSig=chrome;Transport=direct;CDNOriginHost=;NumConn=4" | jq -rR @uri)
+        CLOACK_PLUGIN=$(echo "ck-client;StreamTimeout=300;PublicKey=$CLOACK_PUBLIC_KEY;EncryptionMethod=plain;ProxyMethod=shadowsocks;UID=$CLOACK_USER_UID;CDNWsUrlPath=;AlternativeNames=;KeepAlive=0;ServerName=$CLOACK_DOMAIN;BrowserSig=chrome;Transport=direct;CDNOriginHost=;NumConn=4" | jq -rR @uri)
         export CLOACK_LINK="$SS_USERINFO@$SERVER_WAN_IP:$CLOACK_SERVER_PORT\/?plugin=$CLOACK_PLUGIN#$(hostname)-cloack"
     else
         export CLOACK_LINK=""
