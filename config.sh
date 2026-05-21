@@ -305,8 +305,8 @@ if [ "$MODE" = "server" ]; then
     if [ -z "$CLOACK_PRIVATE_KEY" ]; then
         # Generating CLOACK private and public keys
         OUTPUT=$(cloack-server -key)
-        CLOACK_PUBLIC_KEY="$(echo "$OUTPUT" | awk '/PUBLIC/ {print $NF}')"
-        CLOACK_PRIVATE_KEY="$(echo "$OUTPUT" | awk '/PRIVATE/ {print $NF}')"
+        export CLOACK_PUBLIC_KEY="$(echo "$OUTPUT" | awk '/PUBLIC/ {print $NF}')"
+        export CLOACK_PRIVATE_KEY="$(echo "$OUTPUT" | awk '/PRIVATE/ {print $NF}')"
     fi
     sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
     
