@@ -301,23 +301,25 @@ if [ "$MODE" = "server" ]; then
 	sed -i "/^CLOACK_SERVER_PORT=/{h;s/=.*/=${CLOACK_SERVER_PORT}/};\${x;/^$/{s//CLOACK_SERVER_PORT=${CLOACK_SERVER_PORT}/;H};x}" $CONFIG_PATH/config.ini
     
     # CLOACK_KEY
-    CLOACK_PRIVATE_KEY=$(jq -r '."PrivateKey"' $CONFIG_PATH/server/ckserver.json 2>/dev/null)   
+    export CLOACK_PRIVATE_KEY=$(jq -r '."PrivateKey"' $CONFIG_PATH/server/ckserver.json 2>/dev/null)   
     if [ -z "$CLOACK_PRIVATE_KEY" ]; then
         # Generating CLOACK private and public keys
         OUTPUT=$(cloack-server -key)
         export CLOACK_PUBLIC_KEY="$(echo "$OUTPUT" | awk '/PUBLIC/ {print $NF}')"
         export CLOACK_PRIVATE_KEY="$(echo "$OUTPUT" | awk '/PRIVATE/ {print $NF}')"
-        sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
+    else
+        export CLOACK_PUBLIC_KEY=$(grep -E -o "^CLOACK_USER_UID=.+" $CONFIG_PATH/_CLIENT.txt | sed 's/CLOACK_USER_UID=//')
     fi
+	sed -i "/^CLOACK_PUBLIC_KEY=/{h;s/=.*/=${CLOACK_PUBLIC_KEY}/};\${x;/^$/{s//CLOACK_PUBLIC_KEY=${CLOACK_PUBLIC_KEY}/;H};x}" $CONFIG_PATH/_CLIENT.txt
         
     # CLOACK_ADMIN_UID
-    CLOACK_ADMIN_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
+    export CLOACK_ADMIN_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
     if [ -z "$CLOACK_ADMIN_UID" ]; then
         export CLOACK_ADMIN_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
     fi
     
     # CLOACK_USER_UID
-    CLOACK_USER_UID=$(jq -r '."AdminUID"' $CONFIG_PATH/server/ckserver.json)   
+    export CLOACK_USER_UID=$(jq -r '."BypassUID".[0]' $CONFIG_PATH/server/ckserver.json)   
     if [ -z "$CLOACK_USER_UID" ]; then
         export CLOACK_USER_UID="$(cloack-server -uid | awk '/UID/ {print $NF}')"
     fi
