@@ -27,7 +27,7 @@ COPY restart_svc.sh /restart_svc.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive \
 && chmod a+x /start.sh && chmod a+x /config.sh && chmod a+x /update.sh && chmod a+x /ps_exit.sh && chmod a+x /restart_svc.sh \
-&& apt-get update && apt-get upgrade \
+&& apt-get update \
 && apt-get install --no-install-recommends -y ca-certificates tzdata curl wget xz-utils unzip jq moreutils libcap2-bin cron net-tools dos2unix entr git \
 && dos2unix /start.sh && dos2unix /config.sh && dos2unix /update.sh && dos2unix /ps_exit.sh && dos2unix /restart_svc.sh \
 && mkdir /tmp/ss && cd /tmp/ss \
