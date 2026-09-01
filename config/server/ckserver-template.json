@@ -14,5 +14,6 @@
   "RedirAddr": "$CLOACK_DOMAIN",
   "PrivateKey": "$CLOACK_KEY",
   "AdminUID": "$CLOACK_ADMIN_UID",
-  "DatabasePath": "/etc/shadowsocks/cloack_userinfo.db"
+  "DatabasePath": "/etc/shadowsocks/cloack_userinfo.db",
+  "SessionIdleTimeout": -1
 }
