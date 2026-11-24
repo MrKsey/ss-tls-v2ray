@@ -70,4 +70,5 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 VOLUME [ "$CONFIG_PATH" ]
 
+
 ENTRYPOINT ["/start.sh"]
