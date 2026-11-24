@@ -72,3 +72,4 @@ VOLUME [ "$CONFIG_PATH" ]
 
 
 ENTRYPOINT ["/start.sh"]
+
