@@ -18,18 +18,18 @@ if [ "$OS_UPDATE" = "true" ]; then
 fi
 
 mkdir -p /tmp/ss && cd /tmp/ss
+ARCH=$(dpkg --print-architecture)
 
 # Update ShadowSocks
-SS_VER=$([ "$SS_VER" != "latest" ] && echo tags/$SS_VER || echo $SS_VER)
+SS_VER=$([ "$SS_VER" != "latest" ] && echo "tags/$SS_VER" || echo "$SS_VER")
 SS_LOCAL_VER=$(/usr/local/bin/ssserver --version | cut -d ' ' -f 2 | sed -E "s/^[a-zA-Z]//")
-SS_GIT_VER=$(curl -f -s $SS_URL/$SS_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
+SS_JSON=$(curl -fsSL "$SS_URL/$SS_VER")
+SS_GIT_VER=$(echo "$SS_JSON" | jq -r '.tag_name // empty' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for ShadowSocks updates ..."
-if [ ! -z "$SS_GIT_VER" ] && [ "$SS_LOCAL_VER" != "$SS_GIT_VER" ]; then
+if [ -n "$SS_GIT_VER" ] && [ "$SS_LOCAL_VER" != "$SS_GIT_VER" ]; then
     echo "$(date): Updating ShadowSocks to version $SS_GIT_VER ..."
-    wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/ss.tar.xz --tries=3 $(\
-    curl -s $SS_URL/$SS_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep -i "gnu" | grep -i -v "sha256" | \
-    grep -i -E "$(dpkg --print-architecture | sed "s/amd64/x86_64/g" | sed "s/arm64/aarch64/g" | sed -E "s/armhf/arm.+eabihf/g")")
-    if [ $? -eq 0 ]; then
+    SS_DL=$(echo "$SS_JSON" | jq -r '.assets[].browser_download_url' | grep -i "$(uname)" | grep -i "gnu" | grep -v "sha256" | grep -i -E "$(echo $ARCH | sed 's/amd64/x86_64/g; s/arm64/aarch64/g; s/armhf/arm.+eabihf/g')")
+    if [ -n "$SS_DL" ] && wget --no-verbose --user-agent="$USER_AGENT" --output-document=/tmp/ss/ss.tar.xz --tries=3 "$SS_DL"; then
         tar -xf ss.tar.xz --directory /usr/local/bin
         chmod a+x /usr/local/bin/*
         SS_LOCAL_VER=$(/usr/local/bin/ssserver --version | cut -d ' ' -f 2)
@@ -51,17 +51,17 @@ else
 fi
 
 # Update Simple TLS
-SIMPLE_TLS_VER=$([ "$SIMPLE_TLS_VER" != "latest" ] && echo tags/$SIMPLE_TLS_VER || echo $SIMPLE_TLS_VER)
+SIMPLE_TLS_VER=$([ "$SIMPLE_TLS_VER" != "latest" ] && echo "tags/$SIMPLE_TLS_VER" || echo "$SIMPLE_TLS_VER")
 SIMPLE_TLS_LOCAL_VER=$(/usr/local/bin/simple-tls -v 2>&1 | cut -d '-' -f 1 | sed -E "s/^[a-zA-Z]//")
-SIMPLE_TLS_GIT_VER=$(curl -f -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
+TLS_JSON=$(curl -fsSL "$SIMPLE_TLS_URL/$SIMPLE_TLS_VER")
+SIMPLE_TLS_GIT_VER=$(echo "$TLS_JSON" | jq -r '.tag_name // empty' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for Simple TLS updates ..."
-if [ ! -z "$SIMPLE_TLS_GIT_VER" ] && [ "$SIMPLE_TLS_LOCAL_VER" != "$SIMPLE_TLS_GIT_VER" ]; then
+if [ -n "$SIMPLE_TLS_GIT_VER" ] && [ "$SIMPLE_TLS_LOCAL_VER" != "$SIMPLE_TLS_GIT_VER" ]; then
     echo "$(date): Updating Simple TLS to version $SIMPLE_TLS_GIT_VER ..."
-    wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/simple_tls.zip --tries=3 $(\
-    curl -s $SIMPLE_TLS_URL/$SIMPLE_TLS_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
-    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/arm-7/g")")
-    if [ $? -eq 0 ]; then
-        unzip -x -o simple_tls.zip simple-tls -d /usr/local/bin
+    TLS_DL=$(echo "$TLS_JSON" | jq -r '.assets[].browser_download_url' | grep -i "$(uname)" | grep -i -E "$(echo $ARCH | sed 's/armhf/arm-7/g')")
+    if [ -n "$TLS_DL" ] && wget --no-verbose --user-agent="$USER_AGENT" --output-document=/tmp/ss/simple_tls.zip --tries=3 "$TLS_DL"; then
+        mkdir -p /tmp/ss/tls_ext && unzip -o simple_tls.zip -d /tmp/ss/tls_ext
+        mv /tmp/ss/tls_ext/simple-tls* /usr/local/bin/simple-tls
         chmod a+x /usr/local/bin/*
         SIMPLE_TLS_LOCAL_VER=$(/usr/local/bin/simple-tls -v 2>&1 | cut -d '-' -f 1)
         echo "$(date): Simple TLS updated to version $SIMPLE_TLS_LOCAL_VER"
@@ -78,17 +78,16 @@ else
 fi
 
 # Update V2RAY
-V2RAY_VER=$([ "$V2RAY_VER" != "latest" ] && echo tags/$V2RAY_VER || echo $V2RAY_VER)
+V2RAY_VER=$([ "$V2RAY_VER" != "latest" ] && echo "tags/$V2RAY_VER" || echo "$V2RAY_VER")
 V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2 | sed -E "s/^[a-zA-Z]//")
-V2RAY_GIT_VER=$(curl -f -s $V2RAY_URL/$V2RAY_VER | jq -r '."tag_name"' | sed -E "s/^[a-zA-Z]//")
+V2RAY_JSON=$(curl -fsSL "$V2RAY_URL/$V2RAY_VER")
+V2RAY_GIT_VER=$(echo "$V2RAY_JSON" | jq -r '.tag_name // empty' | sed -E "s/^[a-zA-Z]//")
 echo "$(date): Start checking for V2RAY updates ..."
-if [ ! -z "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
+if [ -n "$V2RAY_GIT_VER" ] && [ "$V2RAY_LOCAL_VER" != "$V2RAY_GIT_VER" ]; then
     echo "$(date): Updating V2RAY to version $V2RAY_GIT_VER ..."
-    wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 $(\
-    curl -s $V2RAY_URL/$V2RAY_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | \
-    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")")
-    if [ $? -eq 0 ]; then
-        tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(dpkg --print-architecture | sed "s/armhf/_arm7/g")") && ln -s -f /usr/local/bin/v2ray-* /usr/local/bin/v2ray
+    V2RAY_DL=$(echo "$V2RAY_JSON" | jq -r '.assets[].browser_download_url' | grep -i "$(uname)" | grep -i -E "$(echo $ARCH | sed 's/armhf/arm-v/g')")
+    if [ -n "$V2RAY_DL" ] && wget --no-verbose --user-agent="$USER_AGENT" --output-document=/tmp/ss/v2ray.tar.gz --tries=3 "$V2RAY_DL"; then
+        tar --directory /usr/local/bin -xf v2ray.tar.gz $(tar -tf v2ray.tar.gz | grep -i -E "$(echo $ARCH | sed 's/armhf/_arm7/g')") && ln -s -f /usr/local/bin/v2ray-* /usr/local/bin/v2ray
         chmod a+x /usr/local/bin/*
         V2RAY_LOCAL_VER=$(/usr/local/bin/v2ray --version | grep v2ray | cut -d ' ' -f 2)
         echo "$(date): V2RAY updated to version $V2RAY_LOCAL_VER"
@@ -110,16 +109,15 @@ if [ "$MODE" == "server" ]; then
 else
     CLOACK_ENDING="client"
 fi
-CLOACK_VER=$([ "$CLOACK_VER" != "latest" ] && echo tags/$CLOACK_VER || echo $CLOACK_VER)
+CLOACK_VER=$([ "$CLOACK_VER" != "latest" ] && echo "tags/$CLOACK_VER" || echo "$CLOACK_VER")
 CLOACK_LOCAL_VER=$(/usr/local/bin/cloack-$CLOACK_ENDING -v | grep -E -o "v[0-9.]+")
-CLOACK_GIT_VER=$(curl -f -s $CLOACK_URL/$CLOACK_VER | jq -r '."tag_name"')
+CLOAK_JSON=$(curl -fsSL "$CLOACK_URL/$CLOACK_VER")
+CLOACK_GIT_VER=$(echo "$CLOAK_JSON" | jq -r '.tag_name // empty')
 echo "$(date): Start checking for CLOACK updates ..."
-if [ ! -z "$CLOACK_GIT_VER" ] && [ "$CLOACK_LOCAL_VER" != "$CLOACK_GIT_VER" ]; then
+if [ -n "$CLOACK_GIT_VER" ] && [ "$CLOACK_LOCAL_VER" != "$CLOACK_GIT_VER" ]; then
     echo "$(date): Updating CLOACK to version $CLOACK_GIT_VER ..."
-    wget --no-verbose --no-check-certificate --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-$CLOACK_ENDING --tries=3 $(\
-    curl -s $CLOACK_URL/$CLOACK_VER | grep -o -E 'http.+\w+' | grep -i "$(uname)" | grep $CLOACK_ENDING | \
-    grep -i -E "$(dpkg --print-architecture | sed "s/armhf/-arm-/g")")
-    if [ $? -eq 0 ]; then
+    CLOAK_DL=$(echo "$CLOAK_JSON" | jq -r '.assets[].browser_download_url' | grep -i "$(uname)" | grep "$CLOACK_ENDING" | grep -i -E "$(echo $ARCH | sed 's/armhf/-arm-/g')")
+    if [ -n "$CLOAK_DL" ] && wget --no-verbose --user-agent="$USER_AGENT" --output-document=/tmp/ss/cloack-$CLOACK_ENDING --tries=3 "$CLOAK_DL"; then
         cp ./cloack-$CLOACK_ENDING /usr/local/bin/
         chmod a+x /usr/local/bin/*
         CLOACK_LOCAL_VER=$(/usr/local/bin/cloack-$CLOACK_ENDING -v | grep -E -o "v[0-9.]+")
